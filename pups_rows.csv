@@ -1,0 +1,23 @@
+id,created_at,name,birthday,colors,mom,dad,price,available,embark,sold,breed_id,avatar,female
+1,2022-01-10T19:05:36.000Z,Maci Rae,2020-09-02T00:00:00.000Z,"[""white""]",,,,false,https://my.embarkvet.com/dog/maceyrae,false,1,https://source.boringavatars.com/marble,true
+2,2022-01-11T00:49:57.000Z,Jake,2018-01-10T00:00:00.000Z,"[""black"",""brown""]",,,,false,https://my.embarkvet.com/dog/jake1428,false,2,https://source.boringavatars.com/marble,false
+3,2022-01-11T00:56:50.000Z,Atlas,2017-04-08T00:00:00.000Z,"[""black""]",,2,,false,,false,4,https://source.boringavatars.com/marble,false
+4,2022-01-11T19:42:01.455Z,Babe,2021-05-04T00:00:00.000Z,,1,3,,false,,true,4,https://ivwtnhqyqzpmfbfabaqi.supabase.in/storage/v1/object/sign/pups/babe.JPG?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJwdXBzL2JhYmUuSlBHIiwiaWF0IjoxNjQxOTY3NDkzLCJleHAiOjE5NTczMjc0OTN9.RB3UrPkIMihIaII6ieURzs5BF7VNLR4kE--kS2WSgnU,false
+5,2022-01-11T19:42:01.503Z,Fenway,2021-05-04T00:00:00.000Z,,1,3,,false,,true,4,https://ivwtnhqyqzpmfbfabaqi.supabase.in/storage/v1/object/sign/pups/fenway.JPG?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJwdXBzL2ZlbndheS5KUEciLCJpYXQiOjE2NDE5NjgxMTQsImV4cCI6MTk1NzMyODExNH0.O1JLMQAEZMXxGHgDSyDhoehc1L_EOdpMGYIwnJTWzIQ,false
+6,2022-01-11T19:42:01.503Z,Griffey,2021-05-04T00:00:00.000Z,,1,3,,false,,true,4,https://ivwtnhqyqzpmfbfabaqi.supabase.in/storage/v1/object/sign/pups/griffey.JPG?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJwdXBzL2dyaWZmZXkuSlBHIiwiaWF0IjoxNjQxOTY4MTMyLCJleHAiOjE5NTczMjgxMzJ9.8AgE6Lyf-Zii6pfxaHsCco0-gKATxQ0C_au2x04cSic,false
+7,2022-01-11T19:42:01.503Z,Homer,2021-05-04T00:00:00.000Z,,1,3,,false,,true,4,https://source.boringavatars.com/marble,false
+8,2022-01-11T19:42:01.503Z,Jeter,2021-05-04T00:00:00.000Z,,1,3,,false,,true,4,https://source.boringavatars.com/marble,false
+9,2022-01-11T19:42:01.503Z,Ranger,2021-05-04T00:00:00.000Z,,1,3,,false,,true,4,https://source.boringavatars.com/marble,false
+10,2022-01-11T19:42:01.503Z,Smalls,2021-05-04T00:00:00.000Z,,1,3,,false,,true,4,https://source.boringavatars.com/marble,true
+11,2022-01-11T19:42:01.503Z,Sox,2021-05-04T00:00:00.000Z,,1,3,,false,,true,4,https://source.boringavatars.com/marble,true
+12,2022-01-11T19:42:01.503Z,Yogi,2021-05-04T00:00:00.000Z,,1,3,,false,,true,4,https://source.boringavatars.com/marble,false
+13,2022-01-15T08:10:16.000Z,Luna,,[],,,,false,http://embk.me/luna9988?utm_campaign=cns_ref_dog_pub_profile&utm_medium=other&utm_source=embark,,,https://source.boringavatars.com/marble,true
+14,2022-01-15T10:46:48.000Z,Matrix,2021-12-11T00:00:00.000Z,[],1,2,,false,,false,5,https://source.boringavatars.com/marble,true
+15,2022-01-15T10:47:55.000Z,Green,2021-12-11T00:00:00.000Z,[],1,2,,true,,false,5,https://source.boringavatars.com/marble,true
+16,2022-01-15T10:52:05.000Z,Purple,2021-12-11T00:00:00.000Z,[],1,3,,false,,,5,https://source.boringavatars.com/marble,false
+17,2022-01-15T10:53:26.000Z,Black,2021-12-11T00:00:00.000Z,[],1,3,,,,,5,https://source.boringavatars.com/marble,true
+18,2022-01-15T10:54:22.000Z,Gold,2021-12-11T00:00:00.000Z,[],1,3,,,,,5,https://source.boringavatars.com/marble,false
+19,2022-01-15T10:58:12.000Z,Neo,2021-12-11T00:00:00.000Z,[],1,3,,false,,,5,https://source.boringavatars.com/marble,false
+20,2022-01-15T10:59:08.000Z,Mufasa,2021-12-11T00:00:00.000Z,[],1,3,,,,,5,https://source.boringavatars.com/marble,false
+21,2022-01-15T11:00:57.000Z,Lime,2021-12-11T00:00:00.000Z,[],1,3,,,,,5,https://source.boringavatars.com/marble,true
+22,2022-01-15T11:01:31.000Z,Rip,2021-12-11T00:00:00.000Z,[],1,3,,,,,,https://source.boringavatars.com/marble,false
