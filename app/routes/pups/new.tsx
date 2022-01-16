@@ -2,10 +2,8 @@ import { LoaderFunction, useLoaderData } from 'remix';
 import { PupForm } from '~/components/PupForm';
 import { FormSelectOption } from '~/components/SelectInput';
 import { getReqFormData } from '~/utils/selectData';
-import { supabase } from '~/utils/supabase';
-export let loader: LoaderFunction = async () => {
-  return await getReqFormData();
-};
+
+export let loader: LoaderFunction = async () => await getReqFormData();
 
 type Data = Record<'breeds' | 'dads' | 'moms', FormSelectOption[]>;
 

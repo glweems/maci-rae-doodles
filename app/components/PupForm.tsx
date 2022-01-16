@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { ChangeEventHandler, FC } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
+import { ActionFunction, Form, useFetcher, useLoaderData } from 'remix';
 import { FormSelectOption, SelectInput } from '~/components/SelectInput';
 
 export interface PupFormProps {
@@ -22,21 +23,19 @@ export interface PupFormProps {
   moms: FormSelectOption[];
   defaultValues?: FieldValues;
 }
-export const PupForm: FC<PupFormProps> = ({
-  breeds,
-  dads,
-  moms,
-  defaultValues
-}) => {
-  //   const { breeds, dads, moms } = useLoaderData();
 
+export let action: ActionFunction = async ({ request }) => {
+  console.log('request', request);
+  const formData = await request.formData();
+  return { name: formData.get('name') };
+};
+
+export const PupForm: FC<PupFormProps> = ({ defaultValues }) => {
+  const fetcher = useLoaderData();
+  const { breeds, dads, moms } = fetcher;
   const { register, handleSubmit, getValues, setValue } = useForm({
-    defaultValues
+    defaultValues: defaultValues ?? { colors: [] }
   });
-
-  const onSubmit = (data: typeof defaultValues) => {
-    console.log(data);
-  };
 
   const updateValue: ChangeEventHandler<
     HTMLSelectElement | HTMLInputElement
@@ -48,7 +47,7 @@ export const PupForm: FC<PupFormProps> = ({
         bg="red.500"
         src={getValues('avatar') ?? 'https://source.boringavatars.com/'}
       />
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <Form action="">
         <FormControl>
           <FormLabel htmlFor="name">Name</FormLabel>
           <Input {...register('name')} required />
@@ -138,7 +137,7 @@ export const PupForm: FC<PupFormProps> = ({
         </HStack>
 
         <Button type="submit">Submit</Button>
-      </form>
+      </Form>
     </Container>
   );
 };

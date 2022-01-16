@@ -11,7 +11,7 @@ import { Divider } from '@supabase/ui';
 import { useForm } from 'react-hook-form';
 import { LoaderFunction, useLoaderData, useNavigate } from 'remix';
 import { Pup } from '~/types';
-import { supabase } from '~/utils/supabase';
+import { supabase } from '~/utils/supabase.server';
 
 export let loader: LoaderFunction = async ({ params }) => {
   const pup = await supabase
