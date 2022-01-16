@@ -1,18 +1,14 @@
 import {
+  Link as ChakraLink,
   Table,
   TableCaption,
-  Thead,
-  Tr,
-  Th,
   Tbody,
   Td,
-  Avatar,
-  AvatarBadge,
-  Tfoot,
-  Link as ChakraLink
+  Thead,
+  Tr
 } from '@chakra-ui/react';
-import { FC, ReactNode } from 'react';
 import { Link, LoaderFunction, useLoaderData } from 'remix';
+import ReactJson from '~/components/ReactJson';
 import { Pup } from '~/types';
 import { supabase } from '~/utils/supabase';
 
@@ -29,7 +25,7 @@ const tbl: Array<keyof Pup> = [
   'colors',
   'mom',
   'dad',
-  'breed',
+  'breed_id',
   'avatar',
   'price',
   'available',
@@ -37,44 +33,48 @@ const tbl: Array<keyof Pup> = [
   'sold'
 ];
 
-const renderRow = {
-  name: ({ name, id }: Pup) => <Link to={`/pups/${id}`}>{name}</Link>,
-  embark: (pup: Pup) =>
-    pup.embark ? (
-      <ChakraLink href={pup.embark} target="_blank">
-        embark
-      </ChakraLink>
-    ) : (
-      '-'
-    )
+const render = (key: keyof Pup, pup: Pup) => {
+  switch (key) {
+    case 'name':
+      return <Link to={`/pups/${pup.id}`}>{pup.name}</Link>;
+    case 'embark':
+      return pup.embark ? (
+        <ChakraLink href={pup.embark} target="_blank">
+          embark
+        </ChakraLink>
+      ) : (
+        '-'
+      );
+    default:
+      return pup[key];
+  }
 };
 
 export default function Index() {
   const { data } = useLoaderData();
-  console.log('data: ', data);
+
   return (
-    <Table variant="striped" colorScheme="teal">
-      <TableCaption>Imperial to metric conversion factors</TableCaption>
-      <Thead>
-        <Tr>
-          {tbl.map((item) => (
-            <Td key={item}>{item}</Td>
-          ))}
-        </Tr>
-      </Thead>
-      <Tbody>
-        {data?.map((pup: Pup) => (
+    <div>
+      <Table variant="stripe" colorScheme="teal">
+        <TableCaption>Imperial to metric conversion factors</TableCaption>
+        <Thead>
           <Tr>
             {tbl.map((item) => (
-              <Td>
-                {renderRow[item] !== undefined
-                  ? renderRow[item](pup)
-                  : pup[item]}
-              </Td>
+              <Td key={item}>{item}</Td>
             ))}
           </Tr>
-        ))}
-      </Tbody>
-    </Table>
+        </Thead>
+        <Tbody>
+          {data?.map((pup: Pup) => (
+            <Tr>
+              {tbl.map((item) => (
+                <Td>{render(item, pup)}</Td>
+              ))}
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+      <ReactJson pups={data} />
+    </div>
   );
 }

@@ -8,7 +8,7 @@ export let loader: LoaderFunction = async ({ params }) => {
   const pup = await supabase
     .from<Pup>('pups')
     .select('*')
-    .eq('id', params.pupId)
+    .eq('id', params?.pupId as string)
     .single();
 
   return pup;
