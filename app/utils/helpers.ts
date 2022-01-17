@@ -9,3 +9,16 @@ export const USDollar = new Intl.NumberFormat('en-US', {
 });
 
 export const sbSelect = (...args: string[]) => [...args].join(',');
+
+export function toObject<T = Record<string, unknown>>(obj: T): T {
+  return JSON.parse(
+    JSON.stringify(
+      obj,
+      (key, value) => (typeof value === 'bigint' ? value.toString() : value), // return everything else unchanged
+    ),
+  );
+}
+
+export function toArray<T>(arr: T[]): T[] {
+  return arr.map(toObject);
+}
