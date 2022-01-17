@@ -1,4 +1,4 @@
-import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
+import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import {
   Container,
   Image,
@@ -8,52 +8,49 @@ import {
   Td,
   Thead,
   Tr,
-} from "@chakra-ui/react";
-import { Link, LoaderFunction, useLoaderData } from "remix";
-import { Pup } from "~/types";
-import { supabase } from "~/utils/supabase.server";
+} from '@chakra-ui/react';
+import type { LoaderFunction } from 'remix';
+import { Link, useLoaderData } from 'remix';
 
-export let loader: LoaderFunction = async ({ params }) => {
-  const pup = await supabase.from<Pup>("pups").select("*");
+import type { Pup } from '~/types';
+import { supabase } from '~/utils/supabase.server';
+
+export const loader: LoaderFunction = async () => {
+  const pup = await supabase.from<Pup>('pups').select('*');
 
   return pup;
 };
 const tbl: Array<keyof Pup> = [
-  "avatar",
-  "name",
-  "birthday",
-  "mom",
-  "dad",
-  "breed_id",
-  "price",
-  "available",
-  "embark",
-  "sold",
-  "parent",
+  'avatar',
+  'name',
+  'birthday',
+  'mom',
+  'dad',
+  'breed_id',
+  'price',
+  'available',
+  'embark',
+  'sold',
+  'parent',
 ];
 
 const render = (key: keyof Pup, pup: Pup) => {
   switch (key) {
-    case "name":
+    case 'name':
       return <Link to={`/pups/${pup.id}`}>{pup.name}</Link>;
-    case "embark":
+    case 'embark':
       return pup.embark ? (
         <ChakraLink href={pup.embark} target="_blank">
           embark
         </ChakraLink>
       ) : (
-        "-"
+        '-'
       );
-    case "avatar":
+    case 'avatar':
       return (
-        <Image
-          borderRadius="full"
-          boxSize="50px"
-          src={pup.avatar}
-          alt="Dan Abramov"
-        />
+        <Image borderRadius="full" boxSize="50px" src={pup.avatar} alt="pup" />
       );
-    case "parent":
+    case 'parent':
       return pup.parent ? <CheckIcon /> : <CloseIcon />;
     default:
       return pup[key];

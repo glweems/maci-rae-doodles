@@ -1,19 +1,20 @@
 import {
-  Button,
   Container,
   FormControl,
   FormLabel,
   Heading,
   Input,
-  Select
+  Select,
 } from '@chakra-ui/react';
 import { Divider } from '@supabase/ui';
 import { useForm } from 'react-hook-form';
-import { LoaderFunction, useLoaderData, useNavigate } from 'remix';
-import { Pup } from '~/types';
+import type { LoaderFunction } from 'remix';
+import { useLoaderData } from 'remix';
+
+import type { Pup } from '~/types';
 import { supabase } from '~/utils/supabase.server';
 
-export let loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ params }) => {
   const pup = await supabase
     .from<Pup>('pups')
     .select('*')
@@ -28,8 +29,7 @@ export let loader: LoaderFunction = async ({ params }) => {
 };
 
 export default function PupRoute() {
-  const navigate = useNavigate();
-  const [{ data: pup }, { data: pups }, { data: breeds }] =
+  const [{ data: pup }, { data: pups }] =
     useLoaderData<ReturnType<typeof loader>>();
   const { register, handleSubmit } = useForm({ defaultValues: pup });
   const onSubmit = (data) => {

@@ -1,26 +1,28 @@
-import { ChakraProvider } from "@chakra-ui/react";
-import { createClient } from "@supabase/supabase-js";
-import { Fragment } from "react";
+import { ChakraProvider } from '@chakra-ui/react';
+import { createClient } from '@supabase/supabase-js';
+import { Fragment } from 'react';
+import type { MetaFunction } from 'remix';
 import {
   Links,
   LiveReload,
   Meta,
-  MetaFunction,
   Outlet,
   Scripts,
   ScrollRestoration,
   useLoaderData,
-} from "remix";
-import { SupabaseProvider } from "~/utils/supabase-client";
-import { Navbar } from "./components/Navbar";
-import styles from "./tailwind.css";
-import { Env } from "./utils/env";
+} from 'remix';
+
+import { SupabaseProvider } from '~/utils/supabase-client';
+
+import { Navbar } from './components/Navbar';
+import styles from './tailwind.css';
+import type { Env } from './utils/env';
 
 export function links() {
-  return [{ rel: "stylesheet", href: styles }];
+  return [{ rel: 'stylesheet', href: styles }];
 }
 export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
+  return { title: 'New Remix App' };
 };
 
 export const loader = () => {
@@ -28,7 +30,7 @@ export const loader = () => {
     SUPABASE_URL: process.env.SUPABASE_URL,
     SERVICE_KEY: process.env.SERVICE_KEY,
   };
-  console.log("env: ", ev);
+  console.log('env: ', ev);
   return ev;
 };
 
@@ -50,7 +52,7 @@ export default function App() {
               <Outlet />
               <ScrollRestoration />
               <Scripts />
-              {process.env.NODE_ENV === "development" && <LiveReload />}
+              {process.env.NODE_ENV === 'development' && <LiveReload />}
             </Fragment>
           </Layout>
         </main>

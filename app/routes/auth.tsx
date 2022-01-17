@@ -2,6 +2,7 @@ import { Auth } from '@supabase/ui';
 import React, { useEffect } from 'react';
 import type { ActionFunction } from 'remix';
 import { redirect, useSubmit } from 'remix';
+
 import { commitSession, getSession, supabase } from '~/utils/supabase.server';
 
 export const action: ActionFunction = async ({ request }) => {
@@ -14,8 +15,8 @@ export const action: ActionFunction = async ({ request }) => {
 
   return redirect('/pups', {
     headers: {
-      'Set-Cookie': await commitSession(session)
-    }
+      'Set-Cookie': await commitSession(session),
+    },
   });
 };
 
@@ -28,7 +29,6 @@ const Container: React.FC = ({ children }) => {
 
       const accessToken = supabase.auth.session()?.access_token;
       const user = supabase.auth.user();
-      console.log('user: ', user);
 
       if (accessToken && user) {
         formData.append('access_token', accessToken);

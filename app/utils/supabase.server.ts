@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { createCookieSessionStorage } from 'remix';
+
 import { env } from './env';
 
 export const supabase = createClient(env.SUPABASE_URL, env.SERVICE_KEY);
@@ -17,14 +18,14 @@ const { getSession, commitSession, destroySession } =
       // path: '/',
       sameSite: 'lax',
       secrets: ['s3cret1'],
-      secure: true
-    }
+      secure: true,
+    },
   });
 
-export { getSession, commitSession, destroySession };
+export { commitSession, destroySession, getSession };
 
 export const setAuthToken = async (request: Request) => {
-  let session = await getSession(request.headers.get('Cookie'));
+  const session = await getSession(request.headers.get('Cookie'));
 
   supabase.auth.setAuth(session.get('access_token'));
 

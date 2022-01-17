@@ -1,27 +1,14 @@
 import { toNumber } from 'lodash';
-import { ActionFunction, LoaderFunction, redirect, useLoaderData } from 'remix';
+import type { ActionFunction, LoaderFunction } from 'remix';
+import { redirect, useLoaderData } from 'remix';
+
 import { PupForm } from '~/components/PupForm';
-import { FormSelectOption } from '~/components/SelectInput';
+import type { FormSelectOption } from '~/components/SelectInput';
 import { getReqFormData } from '~/utils/selectData';
 import { supabase } from '~/utils/supabase.server';
-const vals = [
-  'name',
-  'birthday',
-  'colors',
-  'mom',
-  'dad',
-  'breed_id',
-  'avatar',
-  'price',
-  'available',
-  'embark',
-  'sold',
-  'gender',
-  'parent'
-];
-export let loader: LoaderFunction = async () => await getReqFormData();
-export let action: ActionFunction = async ({ request }) => {
-  console.log('request', request);
+
+export const loader: LoaderFunction = async () => await getReqFormData();
+export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const pup = {
     name: formData.get('name'),
@@ -35,11 +22,10 @@ export let action: ActionFunction = async ({ request }) => {
     available: formData.get('available'),
     embark: formData.get('embark'),
     sold: formData.get('sold'),
-    gender: formData.get('gender')
+    gender: formData.get('gender'),
   };
   const { data } = await supabase.from('pups').insert(pup).single();
 
-  console.log('data: ', data);
   return redirect(`/pups/${data.id}`);
 };
 

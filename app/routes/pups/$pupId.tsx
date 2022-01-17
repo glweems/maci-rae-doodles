@@ -1,41 +1,41 @@
 import {
+  Box,
   Button,
   Container,
+  Divider,
   Flex,
   Heading,
-  HStack,
-  Text,
-  Divider,
-  Box,
   List,
   ListItem,
-} from "@chakra-ui/react";
-import { extendWith } from "lodash";
-import { LoaderFunction, useLoaderData, useNavigate } from "remix";
-import { Pup } from "~/types";
-import { sbSelect } from "~/utils/helpers";
-import { supabase } from "~/utils/supabase.server";
+  Text,
+} from '@chakra-ui/react';
+import type { LoaderFunction } from 'remix';
+import { useLoaderData, useNavigate } from 'remix';
 
-export let loader: LoaderFunction = async ({ params }) => {
-  let pup = await supabase
-    .from<Pup>("pups")
+import type { Pup } from '~/types';
+import { sbSelect } from '~/utils/helpers';
+import { supabase } from '~/utils/supabase.server';
+
+export const loader: LoaderFunction = async ({ params }) => {
+  const pup = await supabase
+    .from<Pup>('pups')
     .select(
       sbSelect(
-        "*",
-        "breed:breed_id(name)",
-        "dad(id, name, avatar, breed:breed_id(name))",
-        "mom(id, name, avatar, breed:breed_id(name))"
+        '*',
+        'breed:breed_id(name)',
+        'dad(id, name, avatar, breed:breed_id(name))',
+        'mom(id, name, avatar, breed:breed_id(name))'
       )
     )
-    .eq("id", params?.pupId as string)
+    .eq('id', params?.pupId as string)
     .single()
     .then(async ({ data }) => ({
       ...data,
       siblings: await supabase
-        .from("pups")
-        .select(sbSelect("id", "name", "avatar", "parent"))
-        .neq("parent", true)
-        .eq("family_id", data?.family_id)
+        .from('pups')
+        .select(sbSelect('id', 'name', 'avatar', 'parent'))
+        .neq('parent', true)
+        .eq('family_id', data?.family_id)
         .then(({ data }) => data),
     }));
 
@@ -52,9 +52,6 @@ export default function PupRoute() {
   const navigate = useNavigate();
   const pup = useLoaderData();
 
-  //
-  //
-
   return (
     <Container>
       <Flex justifyContent="space-between">
@@ -64,7 +61,7 @@ export default function PupRoute() {
           </Heading>
         </Box>
         <Box>
-          <Button onClick={(e) => navigate(`/pups/${pup?.id}/edit`)} size="sm">
+          <Button onClick={() => navigate(`/pups/${pup?.id}/edit`)} size="sm">
             edit
           </Button>
         </Box>
