@@ -10,12 +10,12 @@ import {
   HStack,
   Input,
   Radio,
-  RadioGroup
-} from '@chakra-ui/react';
-import { ChangeEventHandler, FC } from 'react';
-import { FieldValues, useForm } from 'react-hook-form';
-import { ActionFunction, Form, useFetcher, useLoaderData } from 'remix';
-import { FormSelectOption, SelectInput } from '~/components/SelectInput';
+  RadioGroup,
+} from "@chakra-ui/react";
+import { ChangeEventHandler, FC } from "react";
+import { FieldValues, useForm } from "react-hook-form";
+import { ActionFunction, Form, useFetcher, useLoaderData } from "remix";
+import { FormSelectOption, SelectInput } from "~/components/SelectInput";
 
 export interface PupFormProps {
   breeds: FormSelectOption[];
@@ -24,17 +24,11 @@ export interface PupFormProps {
   defaultValues?: FieldValues;
 }
 
-export let action: ActionFunction = async ({ request }) => {
-  console.log('request', request);
-  const formData = await request.formData();
-  return { name: formData.get('name') };
-};
-
 export const PupForm: FC<PupFormProps> = ({ defaultValues }) => {
   const fetcher = useLoaderData();
   const { breeds, dads, moms } = fetcher;
   const { register, handleSubmit, getValues, setValue } = useForm({
-    defaultValues: defaultValues ?? { colors: [] }
+    defaultValues,
   });
 
   const updateValue: ChangeEventHandler<
@@ -45,12 +39,12 @@ export const PupForm: FC<PupFormProps> = ({ defaultValues }) => {
     <Container>
       <Avatar
         bg="red.500"
-        src={getValues('avatar') ?? 'https://source.boringavatars.com/'}
+        src={getValues("avatar") ?? "https://source.boringavatars.com/"}
       />
-      <Form action="">
+      <Form method="post" action="/pups/new">
         <FormControl>
           <FormLabel htmlFor="name">Name</FormLabel>
-          <Input {...register('name')} required />
+          <Input {...register("name")} required />
         </FormControl>
 
         <FormControl>
@@ -58,7 +52,7 @@ export const PupForm: FC<PupFormProps> = ({ defaultValues }) => {
 
           <RadioGroup
             name="gender"
-            onChange={(value) => setValue('gender', value)}
+            onChange={(value) => setValue("gender", value)}
           >
             <HStack>
               <Radio value="MALE" onChange={console.log}>
@@ -71,13 +65,13 @@ export const PupForm: FC<PupFormProps> = ({ defaultValues }) => {
 
         <FormControl>
           <FormLabel htmlFor="birthday">Birthday</FormLabel>
-          <Input {...register('birthday')} type="date" />
+          <Input {...register("birthday")} type="date" />
         </FormControl>
 
         <FormControl>
           <FormLabel htmlFor="mom">Mom</FormLabel>
           <SelectInput
-            {...register('mom')}
+            {...register("mom")}
             placeholder="Mom"
             options={moms}
             onChange={updateValue}
@@ -87,7 +81,7 @@ export const PupForm: FC<PupFormProps> = ({ defaultValues }) => {
         <FormControl>
           <FormLabel htmlFor="dad">Dad</FormLabel>
           <SelectInput
-            {...register('dad')}
+            {...register("dad")}
             placeholder="Dad"
             options={dads}
             onChange={updateValue}
@@ -97,7 +91,7 @@ export const PupForm: FC<PupFormProps> = ({ defaultValues }) => {
         <FormControl>
           <FormLabel htmlFor="breed_id">Breed</FormLabel>
           <SelectInput
-            {...register('breed_id')}
+            {...register("breed_id")}
             placeholder="Breed"
             options={breeds}
             onChange={updateValue}
@@ -107,7 +101,7 @@ export const PupForm: FC<PupFormProps> = ({ defaultValues }) => {
         <FormControl>
           <FormLabel htmlFor="embark">Embark URL</FormLabel>
           <Input
-            {...register('embark')}
+            {...register("embark")}
             type="url"
             placeholder="http://embk.me/..."
           />
@@ -115,17 +109,17 @@ export const PupForm: FC<PupFormProps> = ({ defaultValues }) => {
 
         <FormControl>
           <FormLabel htmlFor="price">Price</FormLabel>
-          <FormHelperText>{getValues('price')}</FormHelperText>
-          <Input {...register('price')} type="number" onBlur={updateValue} />
+          <FormHelperText>{getValues("price")}</FormHelperText>
+          <Input {...register("price")} type="number" onBlur={updateValue} />
         </FormControl>
 
         <Box>
-          <Checkbox {...register('available')} colorScheme="green">
+          <Checkbox {...register("available")} colorScheme="green">
             Available
           </Checkbox>
         </Box>
         <Box>
-          <Checkbox {...register('sold')} colorScheme="green">
+          <Checkbox {...register("sold")} colorScheme="green">
             Sold
           </Checkbox>
         </Box>

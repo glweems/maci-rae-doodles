@@ -12,6 +12,7 @@ export interface Pup {
   available: boolean | null;
   embark: null | string;
   sold: boolean | null;
-  gender: 'MALE' | 'FEMALE' | null;
+  gender: "MALE" | "FEMALE" | null;
   parent: boolean;
+  family_id: string | null;
 }

@@ -1,5 +1,6 @@
-import { ChakraProvider } from '@chakra-ui/react';
-import { createClient } from '@supabase/supabase-js';
+import { ChakraProvider } from "@chakra-ui/react";
+import { createClient } from "@supabase/supabase-js";
+import { Fragment } from "react";
 import {
   Links,
   LiveReload,
@@ -8,31 +9,30 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData
-} from 'remix';
-import { SupabaseProvider } from '~/utils/supabase-client';
-import styles from './tailwind.css';
-import { env, Env } from './utils/env';
+  useLoaderData,
+} from "remix";
+import { SupabaseProvider } from "~/utils/supabase-client";
+import { Navbar } from "./components/Navbar";
+import styles from "./tailwind.css";
+import { Env } from "./utils/env";
 
 export function links() {
-  return [{ rel: 'stylesheet', href: styles }];
+  return [{ rel: "stylesheet", href: styles }];
 }
 export const meta: MetaFunction = () => {
-  return { title: 'New Remix App' };
+  return { title: "New Remix App" };
 };
 
 export const loader = () => {
-  return {
+  const ev = {
     SUPABASE_URL: process.env.SUPABASE_URL,
-    SERVICE_KEY: process.env.SERVICE_KEY
+    SERVICE_KEY: process.env.SERVICE_KEY,
   };
+  console.log("env: ", ev);
+  return ev;
 };
 
 export default function App() {
-  const loader = useLoaderData<Env>();
-  console.log('loader: ', loader);
-
-  const supabase = createClient(loader.SUPABASE_URL, loader.SERVICE_KEY);
   return (
     <html lang="en">
       <head>
@@ -42,57 +42,33 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <ChakraProvider>
-        <SupabaseProvider supabase={supabase}>
-          <body>
-            <Outlet />
-            <ScrollRestoration />
-            <Scripts />
-            <main>
-              <Navbar />
-              {process.env.NODE_ENV === 'development' && <LiveReload />}
-            </main>
-          </body>
-        </SupabaseProvider>
-      </ChakraProvider>
+
+      <body>
+        <main>
+          <Layout>
+            <Fragment>
+              <Outlet />
+              <ScrollRestoration />
+              <Scripts />
+              {process.env.NODE_ENV === "development" && <LiveReload />}
+            </Fragment>
+          </Layout>
+        </main>
+      </body>
     </html>
   );
 }
 
-const Navbar = () => {
-  return <header></header>;
-};
+export const Layout = ({ children }: { children: React.ReactNode }) => {
+  const loader = useLoaderData<Env>();
 
-/* function Layout({ children }: React.PropsWithChildren<{}>) {
-  const submit = useSubmit();
-  const supabase = useSupabase();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const handleSignOut = () => {
-    supabase.auth.signOut().then(() => {
-      submit(null, { method: 'post', action: '/signout' });
-    });
-  };
-  console.log('supabase.auth.session(): ', supabase.auth.session());
-  const toggle = () => {
-    const isMenuOpen = searchParams.get('menu') === 'true';
-    isMenuOpen ? setSearchParams({}) : setSearchParams({ menu: 'true' });
-  };
+  const supabase = createClient(loader.SUPABASE_URL, loader.SERVICE_KEY);
   return (
-    <main>
-      <Flex color="white">
-        <Center w="100px" bg="green.500">
-          <Text>Box 1</Text>
-        </Center>
-        <Square bg="blue.500" size="150px">
-          <Text>Box 2</Text>
-        </Square>
-        <Box flex="1" bg="tomato">
-          <Text>Box 3</Text>
-        </Box>
-      </Flex>
-      {children}
-    </main>
+    <SupabaseProvider supabase={supabase}>
+      <ChakraProvider>
+        <Navbar />
+        {children}
+      </ChakraProvider>
+    </SupabaseProvider>
   );
-}
- */
+};
