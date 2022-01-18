@@ -1,4 +1,4 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import React from 'react';
 
 export const SupabaseContext = React.createContext<SupabaseClient>(
@@ -7,7 +7,7 @@ export const SupabaseContext = React.createContext<SupabaseClient>(
 
 export const SupabaseProvider: React.FC<{ supabase: SupabaseClient }> = ({
   children,
-  supabase
+  supabase,
 }) => (
   <SupabaseContext.Provider value={supabase}>
     {children}

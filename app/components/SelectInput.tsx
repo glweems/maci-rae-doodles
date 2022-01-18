@@ -1,6 +1,7 @@
-import { Select, SelectProps } from '@chakra-ui/react';
+import type { SelectProps } from '@chakra-ui/react';
+import { Select } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
-import { FC } from 'react';
+import type { FC } from 'react';
 export type FormSelectOption = {
   id: string;
   name: string;

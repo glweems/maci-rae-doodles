@@ -1,83 +1,114 @@
 import {
   Avatar,
+  Badge,
+  Container,
   Link as ChakraLink,
   Table,
-  TableCaption,
   Tbody,
   Td,
+  Text,
+  Th,
   Thead,
-  Tr
+  Tr,
+  VStack,
 } from '@chakra-ui/react';
-import { Link, LoaderFunction, useLoaderData } from 'remix';
-import ReactJson from '~/components/ReactJson';
-import { Pup } from '~/types';
-import { supabase } from '~/utils/supabase.server';
-import { useSupabase } from '~/utils/supabase-client';
-import { CheckCircleIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import type { Pup } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { toArray, upperCase } from 'lodash';
+import { useMemo } from 'react';
+import type { Column } from 'react-table';
+import { useTable } from 'react-table';
+import type { LoaderFunction } from 'remix';
+import { useLoaderData } from 'remix';
 
-export let loader: LoaderFunction = async ({ params }) => {
-  const pup = await supabase.from<Pup>('pups').select('*');
-
-  return pup;
+export const loader: LoaderFunction = async () => {
+  const prisma = new PrismaClient();
+  const data = await prisma.pup.findMany({});
+  return toArray(data);
 };
-const tbl: Array<keyof Pup> = [
-  'avatar',
-  'name',
-  'birthday',
-  'mom',
-  'dad',
-  'breed_id',
-  'price',
-  'available',
-  'embark',
-  'sold',
-  'parent'
-];
 
-const render = (key: keyof Pup, pup: Pup) => {
-  switch (key) {
-    case 'name':
-      return <Link to={`/pups/${pup.id}`}>{pup.name}</Link>;
-    case 'embark':
-      return pup.embark ? (
-        <ChakraLink href={pup.embark} target="_blank">
-          embark
+const columns: Column<Pup>[] = [
+  {
+    Header: 'Avatar',
+    accessor: 'avi',
+    Cell: ({ value, row }) => (
+      <Avatar src={value} alt={`${row.values.name}'s avatar`} />
+    ),
+  },
+  {
+    Header: 'Name',
+    accessor: 'name',
+    Cell: ({ value }) => <Text bold>{value}</Text>,
+  },
+  {
+    Header: 'Roles',
+    accessor: 'roles',
+    Cell: ({ value }) => (
+      <VStack>
+        {value.map((role) => (
+          <Badge>{role}</Badge>
+        ))}
+      </VStack>
+    ),
+  },
+  {
+    Header: 'Gender',
+    accessor: 'gender',
+    Cell: ({ value }) => (
+      <Badge color={value === 'MALE' ? 'blue' : 'red'}>{value}</Badge>
+    ),
+  },
+  {
+    Header: 'Embark',
+    accessor: 'embarkId',
+    Cell: ({ value }) => {
+      if (!value) return null;
+      return (
+        <ChakraLink
+          href={`https://my.embarkvet.com/dog/${value}`}
+          target="_blank"
+        >
+          <Badge bg="#ffce34">{upperCase(value)}</Badge>
         </ChakraLink>
-      ) : (
-        '-'
       );
-    case 'avatar':
-      return <Avatar src={pup.avatar} />;
-    case 'parent':
-      return pup.parent ? <CheckIcon /> : <CloseIcon />;
-    default:
-      return pup[key];
-  }
-};
-
+    },
+  },
+];
 export default function Index() {
-  const { data } = useLoaderData();
+  const data = useLoaderData();
+  const tableColumns = useMemo(() => columns, [columns]);
+  const tableData = useMemo(() => data, [data]);
+  console.log('tableData: ', tableData);
+
+  const { getTableProps, getTableBodyProps, rows, prepareRow } = useTable({
+    data: tableData,
+    columns: tableColumns,
+  });
 
   return (
-    <div>
-      <Table variant="stripe" colorScheme="teal">
+    <Container>
+      <Table {...getTableProps()}>
         <Thead>
-          <Tr>
-            {tbl.map((item) => (
-              <Td key={item}>{item}</Td>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {data?.map((pup: Pup) => (
-            <Tr>
-              {tbl.map((item) => (
-                <Td>{render(item, pup)}</Td>
-              ))}
-            </Tr>
+          {tableColumns.map((column) => (
+            <Th key={column.id}>{column.Header}</Th>
           ))}
+        </Thead>
+        <Tbody {...getTableBodyProps()}>
+          {rows?.map((row) => {
+            prepareRow(row);
+
+            return (
+              <Tr {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <Td {...cell.getCellProps()}>{cell.render('Cell')}</Td>
+                  );
+                })}
+              </Tr>
+            );
+          })}
         </Tbody>
       </Table>
-    </div>
+    </Container>
   );
 }

@@ -10,14 +10,39 @@
     "postinstall": "remix setup node",
     "start": "remix-serve build",
     "build:remix": "remix build",
-    "dev:remix": "remix dev"
+    "dev:remix": "remix dev",
+    "lint": "eslint \"app/**/*.{ts,tsx}\"",
+    "lint:fix": "eslint \"app/**/*.{ts,tsx}\" --fix",
+    "prepare": "husky install",
+    "commit": "git-cz"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": [
+        "lint-staged"
+      ],
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true",
+      "pre-push": [
+        "npm run build",
+        "git add -A",
+        "lint-staged"
+      ]
+    }
+  },
+  "lint-staged": {
+    "app/**/.{ts,tsx}": [
+      "./node_modules/.bin/eslint --fix",
+      "git add"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/prompt"
+    }
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.1.1",
     "@chakra-ui/react": "^1.7.4",
-    "@cloudinary/react": "^1.0.1",
-    "@cloudinary/url-gen": "^1.4.2",
-    "@craco/craco": "^6.4.3",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@headlessui/react": "^1.4.3",
@@ -28,26 +53,54 @@
     "@supabase/supabase-js": "^1.29.1",
     "@supabase/ui": "^0.36.2",
     "@vanilla-extract/css": "^1.6.8",
-    "dotenv": "^12.0.4",
+    "dotenv": "^14.1.0",
+    "eslint-plugin-import": "^2.25.4",
     "framer-motion": "^5.6.0",
     "lodash": "^4.17.21",
-    "nanoid": "^3.1.32",
+    "nanoid": "^3.2.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.24.0",
+    "react-table": "^7.7.0",
     "remix": "^1.1.1",
     "ts-dotenv": "^0.8.3"
   },
   "devDependencies": {
+    "@commitlint/cli": "^16.0.2",
+    "@commitlint/config-conventional": "^16.0.0",
+    "@commitlint/prompt": "^16.0.0",
+    "@prisma/client": "^3.8.1",
     "@remix-run/dev": "^1.1.1",
+    "@types/node": "^17.0.9",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
+    "@types/react-table": "^7.7.9",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/parser": "^5.9.1",
+    "commitizen": "^4.2.4",
     "concurrently": "^7.0.0",
+    "conventional-changelog-atom": "^2.0.8",
+    "eslint": "^8.7.0",
+    "eslint-config-airbnb-typescript": "^16.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-react-app": "^7.0.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-strict-booleans": "^1.0.1",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.7",
     "postcss": "^8.4.5",
     "postcss-import": "^14.0.2",
     "prettier": "^2.5.1",
+    "prettier-eslint": "^13.0.0",
+    "prisma": "^3.8.1",
     "react-json-view": "^1.21.3",
     "tailwindcss": "^3.0.15",
+    "ts-node": "^10.4.0",
     "typescript": "^4.5.4"
   },
   "engines": {
@@ -63,5 +116,8 @@
   "bugs": {
     "url": "https://github.com/glweems/maci-rae-doodles/issues"
   },
-  "homepage": "https://github.com/glweems/maci-rae-doodles#readme"
+  "homepage": "https://github.com/glweems/maci-rae-doodles#readme",
+  "prisma": {
+    "seed": "node --loader ts-node/esm prisma/seed.ts"
+  }
 }

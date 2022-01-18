@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BreedColor {
+  id      Int    @id @default(autoincrement()) @map("colors")
+  name    String
+  hex     String
+  Breed   Breed? @relation(fields: [breedId], references: [id])
+  breedId Int?
+}
+
+model Breed {
+  id         Int          @id @default(autoincrement())
+  name       String
+  Pup        Pup[]
+  parents    Breed[]      @relation("BreedToBreed")
+  parent     Breed?       @relation("BreedToBreed", fields: [id], references: [id])
+  BreedColor BreedColor[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum PupType {
+  MOTHER
+  FATHER
+  CHILD
+}
+
+model Pup {
+  id        Int       @id @default(autoincrement())
+  name      String
+  birthday  DateTime?
+  avi       String    @default("https://source.boringavatars.com/")
+  breed     Breed?    @relation(fields: [breedId], references: [id])
+  breedId   Int
+  gender    Gender
+  colors    String[]
+  roles     PupType[]
+  owner     Owner?
+  ownerId   Int?
+  familyId  Int?
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  embarkId  String?
+}
+
+model Owner {
+  name      String
+  ownerId   String
+  age       Int
+  pup       Pup      @relation(references: [id], fields: [pupId])
+  pupId     Int      @unique
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@id([name, ownerId], name: "nameOwner")
+}
+
+// model Family {
+//   id        Int      @id
+//   name      String
+//   mom       Pup      @relation(fields: [momId], references: [id])
+//   momId     Int
+//   dad       Pup      @relation(fields: [dadId], references: [id])
+//   dadId     Int
+//   createdAt DateTime
+//   updatedAt DateTime
+// }
+
+// model pups {
+//   id                                BigInt     @id(map: "mamas_pkey") @default(autoincrement())
+//   created_at                        DateTime?  @default(now()) @db.Timestamptz(6)
+//   name                              String?
+//   birthday                          DateTime?  @db.Date
+//   colors                            Json[]
+//   mom                               BigInt?
+//   dad                               BigInt?
+//   breed_id                          BigInt?
+//   avatar                            String?    @default("https://source.boringavatars.com/marble")
+//   price                             BigInt?
+//   available                         Boolean?
+//   embark                            String?
+//   sold                              Boolean?
+//   gender                            String?
+//   parent                            Boolean?   @default(false)
+//   family_id                         String?    @db.Uuid
+//   breeds                            breeds?    @relation(fields: [breed_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   pups_pupsTopups_dad               pups?      @relation("pupsTopups_dad", fields: [dad], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   families_familiesTopups_family_id families?  @relation("familiesTopups_family_id", fields: [family_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   pups_pupsTopups_mom               pups?      @relation("pupsTopups_mom", fields: [mom], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   families_families_dadTopups       families[] @relation("families_dadTopups")
+//   families_families_momTopups       families[] @relation("families_momTopups")
+//   other_pups_pupsTopups_dad         pups[]     @relation("pupsTopups_dad")
+//   other_pups_pupsTopups_mom         pups[]     @relation("pupsTopups_mom")
+// }
+
+// model breeds {
+//   id         BigInt    @id @default(autoincrement())
+//   created_at DateTime? @default(now()) @db.Timestamptz(6)
+//   name       String?
+//   pups       pups[]
+// }
+
+// model families {
+//   mom                           BigInt
+//   dad                           BigInt
+//   date                          DateTime @db.Date
+//   id                            String   @id(map: "litter_pkey") @unique(map: "litter_id_key") @db.Uuid
+//   pups_families_dadTopups       pups     @relation("families_dadTopups", fields: [dad], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "litter_dad_fkey")
+//   pups_families_momTopups       pups     @relation("families_momTopups", fields: [mom], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   pups_familiesTopups_family_id pups[]   @relation("familiesTopups_family_id")
+// }

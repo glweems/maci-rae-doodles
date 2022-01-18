@@ -1,4 +1,5 @@
-import { Pup } from '~/types';
+import type { Pup } from '~/types';
+
 import { supabase } from './supabase.server';
 
 export const getBreeds = async () =>

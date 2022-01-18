@@ -10,12 +10,15 @@ import {
   HStack,
   Input,
   Radio,
-  RadioGroup
+  RadioGroup,
 } from '@chakra-ui/react';
-import { ChangeEventHandler, FC } from 'react';
-import { FieldValues, useForm } from 'react-hook-form';
-import { ActionFunction, Form, useFetcher, useLoaderData } from 'remix';
-import { FormSelectOption, SelectInput } from '~/components/SelectInput';
+import type { ChangeEventHandler, FC } from 'react';
+import type { FieldValues } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { Form, useLoaderData } from 'remix';
+
+import type { FormSelectOption } from '~/components/SelectInput';
+import { SelectInput } from '~/components/SelectInput';
 
 export interface PupFormProps {
   breeds: FormSelectOption[];
@@ -24,17 +27,11 @@ export interface PupFormProps {
   defaultValues?: FieldValues;
 }
 
-export let action: ActionFunction = async ({ request }) => {
-  console.log('request', request);
-  const formData = await request.formData();
-  return { name: formData.get('name') };
-};
-
 export const PupForm: FC<PupFormProps> = ({ defaultValues }) => {
   const fetcher = useLoaderData();
   const { breeds, dads, moms } = fetcher;
-  const { register, handleSubmit, getValues, setValue } = useForm({
-    defaultValues: defaultValues ?? { colors: [] }
+  const { register, getValues, setValue } = useForm({
+    defaultValues,
   });
 
   const updateValue: ChangeEventHandler<
@@ -47,7 +44,7 @@ export const PupForm: FC<PupFormProps> = ({ defaultValues }) => {
         bg="red.500"
         src={getValues('avatar') ?? 'https://source.boringavatars.com/'}
       />
-      <Form action="">
+      <Form method="post" action="/pups/new">
         <FormControl>
           <FormLabel htmlFor="name">Name</FormLabel>
           <Input {...register('name')} required />

@@ -1,38 +1,46 @@
-import { ChakraProvider } from '@chakra-ui/react';
+import {
+  Box,
+  ChakraProvider,
+  Container,
+  Heading,
+  theme,
+} from '@chakra-ui/react';
 import { createClient } from '@supabase/supabase-js';
+import type { MetaFunction } from 'remix';
 import {
   Links,
   LiveReload,
   Meta,
-  MetaFunction,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData
+  useCatch,
+  useLoaderData,
 } from 'remix';
+
 import { SupabaseProvider } from '~/utils/supabase-client';
+
+import { Navbar } from './components/Navbar';
 import styles from './tailwind.css';
-import { env, Env } from './utils/env';
+import type { Env } from './utils/env';
 
 export function links() {
   return [{ rel: 'stylesheet', href: styles }];
 }
 export const meta: MetaFunction = () => {
-  return { title: 'New Remix App' };
+  return { title: 'Maci Rae Doodles' };
 };
 
 export const loader = () => {
-  return {
+  const ev = {
     SUPABASE_URL: process.env.SUPABASE_URL,
-    SERVICE_KEY: process.env.SERVICE_KEY
+    SERVICE_KEY: process.env.SERVICE_KEY,
   };
+
+  return ev;
 };
 
 export default function App() {
-  const loader = useLoaderData<Env>();
-  console.log('loader: ', loader);
-
-  const supabase = createClient(loader.SUPABASE_URL, loader.SERVICE_KEY);
   return (
     <html lang="en">
       <head>
@@ -42,57 +50,60 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <ChakraProvider>
-        <SupabaseProvider supabase={supabase}>
-          <body>
+
+      <body>
+        <main>
+          <Layout>
             <Outlet />
-            <ScrollRestoration />
-            <Scripts />
-            <main>
-              <Navbar />
-              {process.env.NODE_ENV === 'development' && <LiveReload />}
-            </main>
-          </body>
-        </SupabaseProvider>
-      </ChakraProvider>
+          </Layout>
+          <ScrollRestoration />
+          <Scripts />
+          {process.env.NODE_ENV === 'development' && <LiveReload />}
+        </main>
+      </body>
     </html>
   );
 }
 
-const Navbar = () => {
-  return <header></header>;
+export const Layout = ({ children }: { children: React.ReactNode }) => {
+  const loader = useLoaderData<Env>();
+
+  const supabase = createClient(loader.SUPABASE_URL, loader.SERVICE_KEY);
+  return (
+    <SupabaseProvider supabase={supabase}>
+      <ChakraProvider>
+        <Navbar />
+        {children}
+      </ChakraProvider>
+    </SupabaseProvider>
+  );
 };
 
-/* function Layout({ children }: React.PropsWithChildren<{}>) {
-  const submit = useSubmit();
-  const supabase = useSupabase();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const handleSignOut = () => {
-    supabase.auth.signOut().then(() => {
-      submit(null, { method: 'post', action: '/signout' });
-    });
-  };
-  console.log('supabase.auth.session(): ', supabase.auth.session());
-  const toggle = () => {
-    const isMenuOpen = searchParams.get('menu') === 'true';
-    isMenuOpen ? setSearchParams({}) : setSearchParams({ menu: 'true' });
-  };
+export function ErrorBoundary({ error }: { error: Error }) {
   return (
-    <main>
-      <Flex color="white">
-        <Center w="100px" bg="green.500">
-          <Text>Box 1</Text>
-        </Center>
-        <Square bg="blue.500" size="150px">
-          <Text>Box 2</Text>
-        </Square>
-        <Box flex="1" bg="tomato">
-          <Text>Box 3</Text>
+    <ChakraProvider theme={theme}>
+      <Container>
+        <Box>
+          <Heading as="h1">There was an error</Heading>
+          <pre>{error.message}</pre>
         </Box>
-      </Flex>
-      {children}
-    </main>
+      </Container>
+    </ChakraProvider>
   );
 }
- */
+
+export function CatchBoundary() {
+  const caught = useCatch();
+
+  return (
+    <ChakraProvider>
+      <Container>
+        <Box>
+          <Heading as="h1">
+            {caught.status} {caught.statusText}
+          </Heading>
+        </Box>
+      </Container>
+    </ChakraProvider>
+  );
+}
