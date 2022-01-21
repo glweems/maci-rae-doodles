@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import React from 'react';
 
 export const SupabaseContext = React.createContext<SupabaseClient>(
-  null as unknown as SupabaseClient
+  null as unknown as SupabaseClient,
 );
 
 export const SupabaseProvider: React.FC<{ supabase: SupabaseClient }> = ({

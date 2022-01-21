@@ -1,12 +1,6 @@
-import {
-  Box,
-  ChakraProvider,
-  Container,
-  Heading,
-  theme,
-} from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import { createClient } from '@supabase/supabase-js';
-import type { MetaFunction } from 'remix';
+import type { LinksFunction } from 'remix';
 import {
   Links,
   LiveReload,
@@ -16,94 +10,113 @@ import {
   ScrollRestoration,
   useCatch,
   useLoaderData,
+  useSubmit,
 } from 'remix';
+import { env } from './utils/env';
 
-import { SupabaseProvider } from '~/utils/supabase-client';
+import { SupabaseProvider, useSupabase } from './utils/supabase-client';
 
-import { Navbar } from './components/Navbar';
-import styles from './tailwind.css';
-import type { Env } from './utils/env';
-
-export function links() {
-  return [{ rel: 'stylesheet', href: styles }];
-}
-export const meta: MetaFunction = () => {
-  return { title: 'Maci Rae Doodles' };
+export let links: LinksFunction = () => {
+  return [
+    // { rel: 'stylesheet', href: tailwindStyles },
+    // {
+    //   rel: 'stylesheet',
+    //   href: appStyles,
+    // },
+  ];
 };
 
 export const loader = () => {
-  const ev = {
-    SUPABASE_URL: process.env.SUPABASE_URL,
-    SERVICE_KEY: process.env.SERVICE_KEY,
-  };
-
-  return ev;
+  return env;
 };
 
 export default function App() {
+  const loader = useLoaderData();
+
+  const supabase = createClient(loader.SUPABASE_URL, loader.SUPABASE_KEY);
+
+  return (
+    <Document>
+      <SupabaseProvider supabase={supabase}>
+        <Layout>
+          <Outlet />
+        </Layout>
+      </SupabaseProvider>
+    </Document>
+  );
+}
+
+function Document({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title?: string;
+}) {
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+        {title ? <title>{title}</title> : null}
         <Meta />
         <Links />
       </head>
-
       <body>
-        <main>
-          <Layout>
-            <Outlet />
-          </Layout>
-          <ScrollRestoration />
-          <Scripts />
-          {process.env.NODE_ENV === 'development' && <LiveReload />}
-        </main>
+        {children}
+        <ScrollRestoration />
+        <Scripts />
+        {process.env.NODE_ENV === 'development' && <LiveReload />}
       </body>
     </html>
   );
 }
 
-export const Layout = ({ children }: { children: React.ReactNode }) => {
-  const loader = useLoaderData<Env>();
+function Layout({ children }: React.PropsWithChildren<{}>) {
+  const submit = useSubmit();
+  const supabase = useSupabase();
 
-  const supabase = createClient(loader.SUPABASE_URL, loader.SERVICE_KEY);
-  return (
-    <SupabaseProvider supabase={supabase}>
-      <ChakraProvider>
-        <Navbar />
-        {children}
-      </ChakraProvider>
-    </SupabaseProvider>
-  );
-};
+  const handleSignOut = () => {
+    supabase.auth.signOut().then(() => {
+      submit(null, { method: 'post', action: '/signout' });
+    });
+  };
 
-export function ErrorBoundary({ error }: { error: Error }) {
   return (
-    <ChakraProvider theme={theme}>
-      <Container>
-        <Box>
-          <Heading as="h1">There was an error</Heading>
-          <pre>{error.message}</pre>
-        </Box>
-      </Container>
-    </ChakraProvider>
+    <main>
+      <header>
+        {supabase.auth.session() && (
+          <Button type="button" onClick={handleSignOut}>
+            Sign out
+          </Button>
+        )}
+      </header>
+      {children}
+    </main>
   );
 }
 
 export function CatchBoundary() {
-  const caught = useCatch();
+  let caught = useCatch();
+
+  let message;
+  switch (caught.status) {
+    case 404:
+      message = <p>This is a custom error message for 404 pages</p>;
+      break;
+    // You can customize the behavior for other status codes
+    default:
+      throw new Error(caught.data || caught.statusText);
+  }
 
   return (
-    <ChakraProvider>
-      <Container>
-        <Box>
-          <Heading as="h1">
-            {caught.status} {caught.statusText}
-          </Heading>
-        </Box>
-      </Container>
-    </ChakraProvider>
+    <Document title={`${caught.status} ${caught.statusText}`}>
+      <Layout>
+        <h1>
+          {caught.status}: {caught.statusText}
+        </h1>
+        {message}
+      </Layout>
+    </Document>
   );
 }

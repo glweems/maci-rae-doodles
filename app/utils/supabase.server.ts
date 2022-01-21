@@ -3,9 +3,9 @@ import { createCookieSessionStorage } from 'remix';
 
 import { env } from './env';
 
-export const supabase = createClient(env.SUPABASE_URL, env.SERVICE_KEY);
+export const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
 
-const { getSession, commitSession, destroySession } =
+export const { getSession, commitSession, destroySession } =
   createCookieSessionStorage({
     // a Cookie from `createCookie` or the CookieOptions to create one
     cookie: {
@@ -15,17 +15,15 @@ const { getSession, commitSession, destroySession } =
       expires: new Date(Date.now() + 3600),
       httpOnly: true,
       maxAge: 60,
-      // path: '/',
+      path: '/',
       sameSite: 'lax',
       secrets: ['s3cret1'],
       secure: true,
     },
   });
 
-export { commitSession, destroySession, getSession };
-
 export const setAuthToken = async (request: Request) => {
-  const session = await getSession(request.headers.get('Cookie'));
+  let session = await getSession(request.headers.get('Cookie'));
 
   supabase.auth.setAuth(session.get('access_token'));
 

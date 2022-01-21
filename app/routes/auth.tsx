@@ -1,19 +1,24 @@
 import { Auth } from '@supabase/ui';
 import React, { useEffect } from 'react';
 import type { ActionFunction } from 'remix';
+import { useActionData } from 'remix';
 import { redirect, useSubmit } from 'remix';
 
+import type { AuthCreds } from '~/components/AuthForm';
+import AuthForm from '~/components/AuthForm';
 import { commitSession, getSession, supabase } from '~/utils/supabase.server';
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
+  console.log('formData: ', formData);
 
   const session = await getSession(request.headers.get('supabase-session'));
+  console.log('session: ', session);
 
   session.set('access_token', formData.get('access_token'));
   session.set('uuid', formData.get('uuid'));
 
-  return redirect('/pups', {
+  return redirect('/pups`', {
     headers: {
       'Set-Cookie': await commitSession(session),
     },
@@ -41,10 +46,7 @@ const Container: React.FC = ({ children }) => {
   return <>{children}</>;
 };
 
-export default function AuthBasic() {
-  return (
-    <Container>
-      <Auth supabaseClient={supabase} redirectTo="/" />
-    </Container>
-  );
+export default function Auth() {
+  const errors = useActionData<AuthCreds>();
+  return <AuthForm errors={errors} />;
 }
