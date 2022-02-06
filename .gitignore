@@ -8,3 +8,7 @@ public/build
 api/_build
 .husky/
 .husky/commit-msg
+**/.DS_Store/**
+.DS_Store
+.env
+.env.*

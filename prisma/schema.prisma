@@ -8,14 +8,9 @@ datasource db {
 }
 
 model BreedColor {
-  id      Int    @id @default(autoincrement()) @map("colors")
-  name    String
-  hex     String
-  Breed   Breed? @relation(fields: [breedId], references: [id])
-  breedId Int?
-}
-
-model Breed {
+  id         Int          @id @default(autoincrement()) @map("colors")
+  name       String
+  model      Breed
   id         Int          @id @default(autoincrement())
   name       String
   Pup        Pup[]

@@ -109,6 +109,57 @@ const seedPups: Prisma.PupCreateManyInput[] = [
     breedId: 2,
   },
 ];
+// Band	Info		Contact	Weight  1/9/22	Weight 1/22/22	Deposit	Price
+const v2 = [
+  {
+    name: 'Matrix',
+    birthday: new Date('12/14/21'),
+    gender: 'FEMALE',
+    roles: ['CHILD'],
+    colors: ['Golden'],
+    owner: {
+      name: 'Garrett',
+    },
+    weights: [
+      { date: new Date('1/9/22'), weight: [4] },
+      { date: new Date('1/22/22'), weight: [6, 14] },
+    ],
+    price: 'Guardian home',
+  },
+  {
+    name: 'Neo',
+    gender: 'MALE',
+    breedId: 2,
+    colors: [''],
+    owner: {},
+    weights: [
+      { date: new Date('1/09/22'), weight: [] },
+      { date: new Date('1/22/22'), weight: [] },
+    ],
+  },
+  {
+    name: '',
+    gender: 'MALE FEMALE',
+    breedId: 2,
+    colors: [''],
+    owner: {},
+    weights: [
+      { date: new Date('1/09/22'), weight: [] },
+      { date: new Date('1/22/22'), weight: [] },
+    ],
+  },
+  // ]	Guardian home	$1mil gcoin },
+];
+/*
+  Neo	Boy	Black	Austin	4lb 8oz	8lb 10oz	$500	Fave child gift
+  Zilker 	Boy	Phantom	Alfred 	3lb 15oz	7lb  9oz	$500	$3000
+  Purple	Boy	White	Kelly	4lb 			Stud fee
+  Ell	Girl	White	Tami	3lb 15oz	6lb 9oz	$500	$2500
+  E	Boy 	Black	Tami	4lb 2oz	6lb 4oz		$500
+  Lime	Girl	Black		3lb 13oz	6lb 12oz
+  Rip	Boy	All Black Wavy		3lb 10oz	6lb 4oz		$2500?
+  Rollover	Girl	White / Creme		4lb 3oz	 7lb 15oz
+   */
 
 const seedDb = async () => {
   await prisma.breedColor.deleteMany({});

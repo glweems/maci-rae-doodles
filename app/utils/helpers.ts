@@ -1,4 +1,5 @@
-// Create our number formatter.
+import _ from 'lodash';
+
 export const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -22,3 +23,10 @@ export function toObject<T = Record<string, unknown>>(obj: T): T {
 export function toArray<T>(arr: T[]): T[] {
   return arr.map(toObject);
 }
+
+export const camelize = (obj) =>
+  _.transform(obj, (acc, value, key, target) => {
+    const camelKey = _.isArray(target) ? key : _.camelCase(key);
+
+    acc[camelKey] = _.isObject(value) ? camelize(value) : value;
+  });
