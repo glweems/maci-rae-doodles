@@ -1,26 +1,8 @@
-import { CloseIcon } from '@chakra-ui/icons';
-import {
-  Box,
-  ChakraProvider,
-  ColorModeScript,
-  Flex,
-  Heading,
-  Text,
-} from '@chakra-ui/react';
-import _ from 'lodash';
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import type { LinksFunction, LoaderFunction, MetaFunction } from 'remix';
-import {
-  Links,
-  LiveReload,
-  Meta,
-  Outlet,
-  redirect,
-  Scripts,
-  useCatch,
-} from 'remix';
+import { Links, LiveReload, Meta, Outlet, redirect, Scripts } from 'remix';
 
 import { Navbar } from './components/Navbar';
-import ReactJson from './components/ReactJson';
 import { theme } from './utils/theme';
 
 export const meta: MetaFunction = () => {
