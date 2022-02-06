@@ -13,72 +13,93 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import type { Pup } from '@prisma/client';
-import { PrismaClient } from '@prisma/client';
-import { toArray, upperCase } from 'lodash';
 import { useMemo } from 'react';
+import ReactJsonSyntaxHighlighter from 'react-json-syntax-highlighter';
 import type { Column } from 'react-table';
 import { useTable } from 'react-table';
 import type { LoaderFunction } from 'remix';
 import { useLoaderData } from 'remix';
 
-export const loader: LoaderFunction = async () => {
-  const prisma = new PrismaClient();
-  const data = await prisma.pup.findMany({});
-  return toArray(data);
+import ReactJson from '~/components/ReactJson';
+import { db } from '~/utils/db.server';
+import { camelize } from '~/utils/helpers';
+
+import type { LoaderData } from '..';
+
+export const loader: LoaderFunction = () => {
+  const dogs: LoaderData[] = db('dogs')
+    .select({
+      // Selecting the first 3 records in Grid view:
+      sort: [{ field: 'Name', direction: 'asc' }],
+    })
+    .all()
+    .then((_dogs) => _dogs.map((_dog) => camelize(_dog.fields)));
+  //
+
+  return dogs;
 };
 
 const columns: Column<Pup>[] = [
   {
     Header: 'Avatar',
-    accessor: 'avi',
-    Cell: ({ value, row }) => (
-      <Avatar src={value} alt={`${row.values.name}'s avatar`} />
-    ),
+    accessor: 'avatar',
+    Cell: ({ value, row }) => {
+      return (
+        <>
+          <Avatar
+            src={value?.[0].thumbnails?.large.url}
+            alt={`${row.values.name}'s avatar`}
+          />
+        </>
+      );
+    },
   },
   {
     Header: 'Name',
     accessor: 'name',
     Cell: ({ value }) => <Text bold>{value}</Text>,
   },
-  {
-    Header: 'Roles',
-    accessor: 'roles',
-    Cell: ({ value }) => (
-      <VStack>
-        {value.map((role) => (
-          <Badge>{role}</Badge>
-        ))}
-      </VStack>
-    ),
-  },
+
   {
     Header: 'Gender',
     accessor: 'gender',
-    Cell: ({ value }) => (
-      <Badge color={value === 'MALE' ? 'blue' : 'red'}>{value}</Badge>
-    ),
+    Cell: ({ value }) => <Badge variant={value}>{value}</Badge>,
   },
   {
     Header: 'Embark',
-    accessor: 'embarkId',
-    Cell: ({ value }) => {
+    accessor: 'embarkUrl',
+    Cell: ({ value, row }) => {
       if (!value) return null;
       return (
-        <ChakraLink
-          href={`https://my.embarkvet.com/dog/${value}`}
-          target="_blank"
-        >
-          <Badge bg="#ffce34">{upperCase(value)}</Badge>
+        <ChakraLink href={value} target="_blank">
+          <Badge bg="#ffce34" color="black">
+            {row.original.embarkId}
+          </Badge>
         </ChakraLink>
       );
+    },
+  },
+  {
+    Header: 'Age',
+    accessor: 'age',
+    Cell: ({ value }) => {
+      return <Text>{value.toString()}</Text>;
+    },
+  },
+  {
+    Header: 'Birthday',
+    accessor: 'birthday',
+    Cell: ({ value }) => {
+      console.log('value: ', value);
+      return <Text>{}</Text>;
     },
   },
 ];
 export default function Index() {
   const data = useLoaderData();
+
   const tableColumns = useMemo(() => columns, [columns]);
-  const tableData = useMemo(() => data, [data]);
-  console.log('tableData: ', tableData);
+  const tableData = useMemo(() => data, data);
 
   const { getTableProps, getTableBodyProps, rows, prepareRow } = useTable({
     data: tableData,
@@ -89,7 +110,7 @@ export default function Index() {
     <Container>
       <Table {...getTableProps()}>
         <Thead>
-          {tableColumns.map((column) => (
+          {tableColumns?.map((column) => (
             <Th key={column.id}>{column.Header}</Th>
           ))}
         </Thead>
@@ -99,7 +120,7 @@ export default function Index() {
 
             return (
               <Tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
+                {row?.cells?.map((cell) => {
                   return (
                     <Td {...cell.getCellProps()}>{cell.render('Cell')}</Td>
                   );

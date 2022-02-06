@@ -1,13 +1,29 @@
 import { extendTheme } from '@chakra-ui/react';
-import { createTheme } from '@vanilla-extract/css';
-export const [theme, vars] = createTheme({
-  colorMode: 'dark',
-  color: {
-    brand: 'blue',
+
+export const theme = extendTheme({
+  config: {
+    initialColorMode: 'dark',
+    useSystemColorMode: false,
   },
-  font: {
-    body: 'arial',
+  components: {
+    Text: {
+      variants: {
+        bold: {
+          fontWeight: 'bold',
+        },
+      },
+    },
+    Badge: {
+      variants: {
+        MALE: {
+          color: 'blue.50',
+          bg: 'blue.500',
+        },
+        FEMALE: {
+          color: 'pink.50',
+          bg: 'pink.500',
+        },
+      },
+    },
   },
 });
-
-extendTheme({ theme });

@@ -1,54 +1,73 @@
-import { Button } from '@chakra-ui/react';
-import { createClient } from '@supabase/supabase-js';
-import type { LinksFunction } from 'remix';
+import { CloseIcon } from '@chakra-ui/icons';
+import {
+  Box,
+  ChakraProvider,
+  ColorModeScript,
+  Flex,
+  Heading,
+  Text,
+} from '@chakra-ui/react';
+import _ from 'lodash';
+import type { LinksFunction, LoaderFunction, MetaFunction } from 'remix';
 import {
   Links,
   LiveReload,
   Meta,
   Outlet,
+  redirect,
   Scripts,
-  ScrollRestoration,
   useCatch,
-  useLoaderData,
-  useSubmit,
 } from 'remix';
-import { env } from './utils/env';
 
-import { SupabaseProvider, useSupabase } from './utils/supabase-client';
+import { Navbar } from './components/Navbar';
+import ReactJson from './components/ReactJson';
+import { theme } from './utils/theme';
 
-export let links: LinksFunction = () => {
-  return [
-    // { rel: 'stylesheet', href: tailwindStyles },
-    // {
-    //   rel: 'stylesheet',
-    //   href: appStyles,
-    // },
-  ];
+export const meta: MetaFunction = () => {
+  const description = `Maci Rae Doodles dog breeding and training`;
+  return {
+    viewport: 'width=device-width,initial-scale=1',
+    description,
+    keywords: 'Remix,jokes',
+    'twitter:image': 'https://remix-jokes.lol/social.png',
+    'twitter:card': 'summary_large_image',
+    'twitter:creator': '@remix_run',
+    'twitter:site': '@remix_run',
+    'twitter:title': 'Remix Jokes',
+    'twitter:description': description,
+  };
 };
 
-export const loader = () => {
-  return env;
+export const links: LinksFunction = () => {
+  return [];
 };
 
-export default function App() {
-  const loader = useLoaderData();
+export const loader: LoaderFunction = ({ request }) => {
+  // upgrade people to https automatically
 
-  const supabase = createClient(loader.SUPABASE_URL, loader.SUPABASE_KEY);
+  const url = new URL(request.url);
+  const hostname = url.hostname;
+  const proto = request.headers.get('X-Forwarded-Proto') ?? url.protocol;
 
-  return (
-    <Document>
-      <SupabaseProvider supabase={supabase}>
-        <Layout>
-          <Outlet />
-        </Layout>
-      </SupabaseProvider>
-    </Document>
-  );
-}
+  url.host =
+    request.headers.get('X-Forwarded-Host') ??
+    request.headers.get('host') ??
+    url.host;
+  url.protocol = 'https:';
+
+  if (proto === 'http' && hostname !== 'localhost') {
+    return redirect(url.toString(), {
+      headers: {
+        'X-Forwarded-Proto': 'https',
+      },
+    });
+  }
+  return {};
+};
 
 function Document({
   children,
-  title,
+  title = 'Maci Rae Doodles',
 }: {
   children: React.ReactNode;
   title?: string;
@@ -57,14 +76,13 @@ function Document({
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        {title ? <title>{title}</title> : null}
         <Meta />
+        {title ? <title>{title}</title> : null}
         <Links />
       </head>
       <body>
+        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
         {children}
-        <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
       </body>
@@ -72,51 +90,69 @@ function Document({
   );
 }
 
-function Layout({ children }: React.PropsWithChildren<{}>) {
-  const submit = useSubmit();
-  const supabase = useSupabase();
+const ContextProvider = ({ children }: { children: React.ReactNode }) => (
+  <ChakraProvider theme={theme}>{children}</ChakraProvider>
+);
 
-  const handleSignOut = () => {
-    supabase.auth.signOut().then(() => {
-      submit(null, { method: 'post', action: '/signout' });
-    });
-  };
-
+export default function App() {
   return (
-    <main>
-      <header>
-        {supabase.auth.session() && (
-          <Button type="button" onClick={handleSignOut}>
-            Sign out
-          </Button>
-        )}
-      </header>
-      {children}
-    </main>
-  );
-}
-
-export function CatchBoundary() {
-  let caught = useCatch();
-
-  let message;
-  switch (caught.status) {
-    case 404:
-      message = <p>This is a custom error message for 404 pages</p>;
-      break;
-    // You can customize the behavior for other status codes
-    default:
-      throw new Error(caught.data || caught.statusText);
-  }
-
-  return (
-    <Document title={`${caught.status} ${caught.statusText}`}>
-      <Layout>
-        <h1>
-          {caught.status}: {caught.statusText}
-        </h1>
-        {message}
-      </Layout>
+    <Document>
+      <ContextProvider>
+        <Navbar />
+        <Outlet />
+      </ContextProvider>
     </Document>
   );
 }
+
+// export function CatchBoundary() {
+//   const caught = useCatch();
+//   console.log('caught: ', caught);
+
+//   return (
+//     <Document title={`${caught.status} ${caught.statusText}`}>
+//       <ContextProvider>
+//         <ErrorMsg {...caught} />
+//       </ContextProvider>
+//     </Document>
+//   );
+// }
+
+// export function ErrorBoundary({ error }: { error: Error }) {
+//   console.log('error: ', error);
+//   console.error(error);
+
+//   return (
+//     <Document title="Uh-oh!">
+//       <ContextProvider>
+//         <ErrorMsg statusText={error} />
+//       </ContextProvider>
+//     </Document>
+//   );
+// }
+
+// export function ErrorMsg({ data, status, statusText }) {
+//   return (
+//     <Box textAlign="center" py={10} px={6}>
+//       <Box display="inline-block">
+//         <Flex
+//           flexDirection="column"
+//           justifyContent="center"
+//           alignItems="center"
+//           bg={'red.500'}
+//           rounded={'50px'}
+//           w={'55px'}
+//           h={'55px'}
+//           textAlign="center"
+//         >
+//           <CloseIcon boxSize={'20px'} color={'white'} />
+//         </Flex>
+//       </Box>
+//       <Heading as="h2" size="xl" mt={6} mb={2}>
+//         {_.toString(status)}
+//       </Heading>
+//       <Text color={'gray.500'}>{_.toString(statusText))}</Text>
+//       {data && <ReactJson {...data} />}
+//     </Box>
+//   );
+// }
