@@ -6,12 +6,14 @@ import {
   Flex,
   HStack,
   IconButton,
+  Link,
   useColorModeValue,
   useDisclosure,
   VisuallyHidden,
   VStack,
 } from '@chakra-ui/react';
 import { Fragment } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'remix';
 
 import { AppLink } from './AppLink';
@@ -31,10 +33,9 @@ export function Navbar() {
       >
         <Flex alignItems="center" justifyContent="space-between" mx="auto">
           <Flex>
-            <AppLink to="/">
-              {/* <Logo /> */}
+            <Link as={NavLink} to="/">
               <VisuallyHidden>MRD</VisuallyHidden>
-            </AppLink>
+            </Link>
             <chakra.h1 fontSize="xl" fontWeight="medium" ml="2">
               <AppLink to="/">Maci Rae Doodles</AppLink>
             </chakra.h1>

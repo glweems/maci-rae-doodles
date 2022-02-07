@@ -1,10 +1,14 @@
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
+import React from 'react';
 import type { LinksFunction, LoaderFunction, MetaFunction } from 'remix';
 import { Links, LiveReload, Meta, Outlet, redirect, Scripts } from 'remix';
 
 import { Navbar } from './components/Navbar';
+import styles from './tailwind.css';
 import { theme } from './utils/theme';
-
+export const links: LinksFunction = () => {
+  return [{ rel: 'stylesheet', href: styles }];
+};
 export const meta: MetaFunction = () => {
   const description = `Maci Rae Doodles dog breeding and training`;
   return {
@@ -20,13 +24,8 @@ export const meta: MetaFunction = () => {
   };
 };
 
-export const links: LinksFunction = () => {
-  return [];
-};
-
 export const loader: LoaderFunction = ({ request }) => {
   // upgrade people to https automatically
-
   const url = new URL(request.url);
   const hostname = url.hostname;
   const proto = request.headers.get('X-Forwarded-Proto') ?? url.protocol;
@@ -86,55 +85,3 @@ export default function App() {
     </Document>
   );
 }
-
-// export function CatchBoundary() {
-//   const caught = useCatch();
-//   console.log('caught: ', caught);
-
-//   return (
-//     <Document title={`${caught.status} ${caught.statusText}`}>
-//       <ContextProvider>
-//         <ErrorMsg {...caught} />
-//       </ContextProvider>
-//     </Document>
-//   );
-// }
-
-// export function ErrorBoundary({ error }: { error: Error }) {
-//   console.log('error: ', error);
-//   console.error(error);
-
-//   return (
-//     <Document title="Uh-oh!">
-//       <ContextProvider>
-//         <ErrorMsg statusText={error} />
-//       </ContextProvider>
-//     </Document>
-//   );
-// }
-
-// export function ErrorMsg({ data, status, statusText }) {
-//   return (
-//     <Box textAlign="center" py={10} px={6}>
-//       <Box display="inline-block">
-//         <Flex
-//           flexDirection="column"
-//           justifyContent="center"
-//           alignItems="center"
-//           bg={'red.500'}
-//           rounded={'50px'}
-//           w={'55px'}
-//           h={'55px'}
-//           textAlign="center"
-//         >
-//           <CloseIcon boxSize={'20px'} color={'white'} />
-//         </Flex>
-//       </Box>
-//       <Heading as="h2" size="xl" mt={6} mb={2}>
-//         {_.toString(status)}
-//       </Heading>
-//       <Text color={'gray.500'}>{_.toString(statusText))}</Text>
-//       {data && <ReactJson {...data} />}
-//     </Box>
-//   );
-// }

@@ -1,6 +1,7 @@
 import { Container, Wrap, WrapItem } from '@chakra-ui/react';
 import type { FieldSet } from 'airtable';
 import { nanoid } from 'nanoid';
+import { Fragment } from 'react';
 import type { LoaderFunction } from 'remix';
 import { useLoaderData } from 'remix';
 
@@ -9,8 +10,8 @@ import type { Dog } from '~/types';
 import { db } from '~/utils/db.server';
 import { camelize } from '~/utils/helpers';
 
+import { Heros } from '../components/Heros';
 import { DogCard } from './DogCard';
-
 export const loader: LoaderFunction = async () => {
   const data = db<FieldSet>('dogs')
     .select({
@@ -26,7 +27,7 @@ export const loader: LoaderFunction = async () => {
           ...fields,
           breedName: breedName?.[0],
           colors: fields.color.split(',').map((color) => color.trim()),
-          birthday: new Date(birthday[0]).toDateString(),
+          birthday: new Date(birthday?.[0]).toDateString(),
         };
         return dog;
       });
@@ -39,10 +40,12 @@ export const loader: LoaderFunction = async () => {
 
 export default function IndexRoute() {
   const dogs = useLoaderData<Dog[]>();
+  console.log('dogs: ', dogs);
 
   return (
-    <Container p={3}>
-      <ReactJson dog={dogs} test="test" />
+    <Fragment>
+      <Heros />
+      <ReactJson dog={dogs} />
       <Wrap spacing="30px" justify="center">
         {dogs.map((dog) => {
           return (
@@ -61,6 +64,6 @@ export default function IndexRoute() {
           );
         })}
       </Wrap>
-    </Container>
+    </Fragment>
   );
 }

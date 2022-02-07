@@ -9,7 +9,17 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
+/*
+ <Link aria-label="inquire" href={inquireForm} target="_blank">
+   Inquire
+ </Link>;
 
+  <HStack>
+    {colors.map((color) => (
+      <Badge key={nanoid()}>{color}</Badge>
+    ))}
+  </HStack>
+ */
 export const DogCard = ({
   name,
   images,
@@ -47,7 +57,6 @@ export const DogCard = ({
         py={3}
         bg="gray.600"
       >
-        {/* <Icon as={MdHeadset} h={6} w={6} color="white" /> */}
         <chakra.h1
           fontSize="xl"
           fontWeight="bold"
@@ -65,11 +74,6 @@ export const DogCard = ({
       </Flex>
 
       <Box py={4} px={6}>
-        <HStack>
-          {colors.map((color) => (
-            <Badge key={nanoid()}>{color}</Badge>
-          ))}
-        </HStack>
         <chakra.p py={2} color={useColorModeValue('gray.700', 'gray.400')}>
           {notes}
         </chakra.p>
@@ -90,16 +94,39 @@ export const DogCard = ({
           alignItems="center"
           mt={4}
           color={useColorModeValue('gray.700', 'gray.200')}
-        >
-          <Link aria-label="inquire" href={inquireForm} target="_blank">
-            Inquire
-          </Link>
-        </Flex>
+        ></Flex>
         <Flex
           alignItems="center"
           mt={4}
           color={useColorModeValue('gray.700', 'gray.200')}
         ></Flex>
+        <Box mt={4}>
+          <Flex alignItems="center">
+            <Flex alignItems="center">
+              <Image
+                h={10}
+                fit="cover"
+                rounded="full"
+                src="https://images.unsplash.com/photo-1586287011575-a23134f797f9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=48&q=60"
+                alt="Avatar"
+              />
+              <Link
+                mx={2}
+                fontWeight="bold"
+                color={useColorModeValue('gray.700', 'gray.200')}
+              >
+                Jone Doe
+              </Link>
+            </Flex>
+            <chakra.span
+              mx={1}
+              fontSize="sm"
+              color={useColorModeValue('gray.600', 'gray.300')}
+            >
+              21 SEP 2015
+            </chakra.span>
+          </Flex>
+        </Box>
       </Box>
     </Box>
   );
