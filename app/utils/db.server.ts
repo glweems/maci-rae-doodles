@@ -1,14 +1,11 @@
 import Airtable from 'airtable';
 import type { AirtableBase } from 'airtable/lib/airtable_base';
-
-import { env } from './env';
-
+import dotenv from 'dotenv';
+dotenv.config();
 Airtable.configure({
-  apiKey: env.AIRTABLE_API_KEY,
+  apiKey: process.env.AIRTABLE_API_KEY,
 });
-export const base = new Airtable({ apiKey: env.AIRTABLE_API_KEY }).base(
-  env.AIRTABLE_BASE_ID,
-);
+// import { env } from './env';
 
 let db: AirtableBase;
 
@@ -21,10 +18,13 @@ declare global {
 // the server with every change, but we want to make sure we don't
 // create a new connection to the DB with every change either.
 if (process.env.NODE_ENV === 'production') {
+  const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
+    process.env.AIRTABLE_BASE_ID,
+  );
   db = base;
 } else {
   if (!global.__db) {
-    const base = Airtable.base(env.AIRTABLE_BASE_ID);
+    const base = Airtable.base(process.env.AIRTABLE_BASE_ID);
     global.__db = base;
   }
   db = global.__db;

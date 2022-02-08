@@ -1,11 +1,23 @@
-import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
+import { CloseIcon } from '@chakra-ui/icons';
+import { Box, ChakraProvider, ColorModeScript, Flex } from '@chakra-ui/react';
+import { m } from 'framer-motion';
 import React from 'react';
 import type { LinksFunction, LoaderFunction, MetaFunction } from 'remix';
-import { Links, LiveReload, Meta, Outlet, redirect, Scripts } from 'remix';
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Outlet,
+  redirect,
+  Scripts,
+  useCatch,
+} from 'remix';
 
+import { ErrorMsg } from './components/ErrorMsg';
 import { Navbar } from './components/Navbar';
 import styles from './tailwind.css';
 import { theme } from './utils/theme';
+
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }];
 };
@@ -62,26 +74,56 @@ function Document({
         <Links />
       </head>
       <body>
-        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-        {children}
-        <Scripts />
-        {process.env.NODE_ENV === 'development' && <LiveReload />}
+        <ContextProvider>
+          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+          {children}
+          <Scripts />
+          {process.env.NODE_ENV === 'development' && <LiveReload />}
+        </ContextProvider>
       </body>
     </html>
   );
 }
 
-const ContextProvider = ({ children }: { children: React.ReactNode }) => (
-  <ChakraProvider theme={theme}>{children}</ChakraProvider>
-);
+export const ContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => <ChakraProvider theme={theme}>{children}</ChakraProvider>;
 
 export default function App() {
   return (
     <Document>
-      <ContextProvider>
-        <Navbar />
+      <Navbar />
+      <Box as="main">
         <Outlet />
-      </ContextProvider>
+      </Box>
+    </Document>
+  );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  console.log('caught: ', caught);
+  const { status, statusText, data } = caught;
+  return (
+    <ContextProvider>
+      <Document title={`${caught.status} ${caught.statusText}`}>
+        <Box as="main">
+          <ErrorMsg caught={caught} />
+        </Box>
+      </Document>
+    </ContextProvider>
+  );
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <Document title="Uh-oh!">
+      <Box as="main" w="100%" maxW="100vw" overflow="hidden">
+        <Navbar />
+        <ErrorMsg error={error} />
+      </Box>
     </Document>
   );
 }

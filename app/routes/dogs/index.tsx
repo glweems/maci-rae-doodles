@@ -10,11 +10,8 @@ import {
   Th,
   Thead,
   Tr,
-  VStack,
 } from '@chakra-ui/react';
-import type { Pup } from '@prisma/client';
 import { useMemo } from 'react';
-import ReactJsonSyntaxHighlighter from 'react-json-syntax-highlighter';
 import type { Column } from 'react-table';
 import { useTable } from 'react-table';
 import type { LoaderFunction } from 'remix';
@@ -24,13 +21,12 @@ import ReactJson from '~/components/ReactJson';
 import { db } from '~/utils/db.server';
 import { camelize } from '~/utils/helpers';
 
-import type { LoaderData } from '..';
-
-export const loader: LoaderFunction = () => {
-  const dogs: LoaderData[] = db('dogs')
+export const loader: LoaderFunction = async () => {
+  const dogs = await db('dogs')
     .select({
       // Selecting the first 3 records in Grid view:
       sort: [{ field: 'Name', direction: 'asc' }],
+      view: 'Admin',
     })
     .all()
     .then((_dogs) => _dogs.map((_dog) => camelize(_dog.fields)));
@@ -42,7 +38,7 @@ export const loader: LoaderFunction = () => {
 const columns: Column<Pup>[] = [
   {
     Header: 'Avatar',
-    accessor: 'avatar',
+    accessor: 'images',
     Cell: ({ value, row }) => {
       return (
         <>
@@ -79,18 +75,11 @@ const columns: Column<Pup>[] = [
       );
     },
   },
-  {
-    Header: 'Age',
-    accessor: 'age',
-    Cell: ({ value }) => {
-      return <Text>{value.toString()}</Text>;
-    },
-  },
+
   {
     Header: 'Birthday',
     accessor: 'birthday',
     Cell: ({ value }) => {
-      console.log('value: ', value);
       return <Text>{}</Text>;
     },
   },

@@ -1,6 +1,7 @@
 import { HamburgerIcon } from '@chakra-ui/icons';
 import {
   Box,
+  Button,
   chakra,
   CloseButton,
   Flex,
@@ -12,9 +13,13 @@ import {
   VisuallyHidden,
   VStack,
 } from '@chakra-ui/react';
+import _ from 'lodash';
+import { nanoid } from 'nanoid';
 import { Fragment } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'remix';
 import { useNavigate } from 'remix';
+
+import { routes } from '~/data';
 
 import { AppLink } from './AppLink';
 
@@ -22,6 +27,10 @@ export function Navbar() {
   const bg = useColorModeValue('white', 'gray.800');
   const mobileNav = useDisclosure();
   const nav = useNavigate();
+  const mobileClick = (e) => {
+    nav(e.target.value);
+    mobileNav.onClose();
+  };
   return (
     <Fragment>
       <chakra.header
@@ -47,7 +56,13 @@ export function Navbar() {
               color="brand.500"
               display={{ base: 'none', md: 'inline-flex' }}
             >
-              <AppLink to="/dogs">Dogs</AppLink>
+              {routes
+                .filter((r) => r.name !== 'home')
+                .map(({ name, path }) => (
+                  <Link key={nanoid()} as={NavLink} to={path}>
+                    {_.capitalize(name)}
+                  </Link>
+                ))}
             </HStack>
             <Box display={{ base: 'inline-flex', md: 'none' }}>
               <IconButton
@@ -75,14 +90,22 @@ export function Navbar() {
                 rounded="sm"
                 shadow="sm"
               >
+                {routes.map(({ name, path }) => (
+                  <Button
+                    key={nanoid()}
+                    variant="link"
+                    value={path}
+                    onClick={mobileClick}
+                  >
+                    {_.capitalize(name)}
+                  </Button>
+                ))}
+
                 <CloseButton
                   aria-label="Close menu"
                   onClick={mobileNav.onClose}
                   color="gray.100"
                 />
-
-                <AppLink to="/">Home</AppLink>
-                <AppLink to="/dogs">Dogs</AppLink>
               </VStack>
             </Box>
           </HStack>

@@ -1,14 +1,13 @@
 import {
-  Badge,
   Box,
-  chakra,
-  Flex,
-  HStack,
+  Center,
+  Heading,
   Image,
-  Link,
+  Stack,
+  Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { nanoid } from 'nanoid';
+import { useNavigate } from 'remix';
 /*
  <Link aria-label="inquire" href={inquireForm} target="_blank">
    Inquire
@@ -20,114 +19,71 @@ import { nanoid } from 'nanoid';
     ))}
   </HStack>
  */
-export const DogCard = ({
-  name,
-  images,
-  breed,
-  colors,
-  notes,
-  inquireForm,
-  birthday,
-}) => {
+export const DogCard = (props) => {
   const initialImage =
-    images?.[0]?.thumbnails?.large?.url ?? 'https://source.boringavatars.com';
-
+    props?.images?.[0]?.thumbnails?.large?.url ??
+    'https://source.boringavatars.com';
+  const navigate = useNavigate();
+  const { name, id, images, gender, price } = props;
   return (
-    <Box
-      w="sm"
-      mx="auto"
-      shadow="lg"
-      rounded="lg"
-      overflow="hidden"
-      bg="gray.900"
-    >
-      <Image
-        w="full"
-        h={56}
-        fit="cover"
-        objectPosition="center"
-        src={initialImage}
-        alt="avatar"
-      />
-
-      <Flex
-        alignItems="center"
-        justifyContent="space-between"
-        px={6}
-        py={3}
-        bg="gray.600"
+    <Center py={12}>
+      <Box
+        role={'group'}
+        p={6}
+        maxW={'330px'}
+        w={'full'}
+        bg={useColorModeValue('white', 'gray.800')}
+        boxShadow={'2xl'}
+        rounded={'lg'}
+        pos={'relative'}
+        zIndex={1}
       >
-        <chakra.h1
-          fontSize="xl"
-          fontWeight="bold"
-          color={useColorModeValue('gray.800', 'white')}
+        <Box
+          rounded={'lg'}
+          mt={-12}
+          pos={'relative'}
+          height={'230px'}
+          _after={{
+            transition: 'all .3s ease',
+            content: '""',
+            w: 'full',
+            h: 'full',
+            pos: 'absolute',
+            top: 5,
+            left: 0,
+            backgroundImage: `url(${initialImage})`,
+            filter: 'blur(15px)',
+            zIndex: -1,
+          }}
+          _groupHover={{
+            _after: {
+              filter: 'blur(20px)',
+            },
+          }}
+          onClick={(e) => navigate(`/dogs/${id}`)}
         >
-          {name}
-        </chakra.h1>
-
-        <chakra.h3
-          mx={3}
-          color="gray.400"
-          fontWeight="bold"
-          fontSize="lg"
-        ></chakra.h3>
-      </Flex>
-
-      <Box py={4} px={6}>
-        <chakra.p py={2} color={useColorModeValue('gray.700', 'gray.400')}>
-          {notes}
-        </chakra.p>
-
-        <Flex
-          alignItems="center"
-          mt={4}
-          color={useColorModeValue('gray.700', 'gray.200')}
-        >
-          {/* <Icon as={icon} h={6} w={6} mr={2} /> */}
-
-          <chakra.h1 px={2} fontSize="sm">
-            {breed}
-          </chakra.h1>
-        </Flex>
-
-        <Flex
-          alignItems="center"
-          mt={4}
-          color={useColorModeValue('gray.700', 'gray.200')}
-        ></Flex>
-        <Flex
-          alignItems="center"
-          mt={4}
-          color={useColorModeValue('gray.700', 'gray.200')}
-        ></Flex>
-        <Box mt={4}>
-          <Flex alignItems="center">
-            <Flex alignItems="center">
-              <Image
-                h={10}
-                fit="cover"
-                rounded="full"
-                src="https://images.unsplash.com/photo-1586287011575-a23134f797f9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=48&q=60"
-                alt="Avatar"
-              />
-              <Link
-                mx={2}
-                fontWeight="bold"
-                color={useColorModeValue('gray.700', 'gray.200')}
-              >
-                Jone Doe
-              </Link>
-            </Flex>
-            <chakra.span
-              mx={1}
-              fontSize="sm"
-              color={useColorModeValue('gray.600', 'gray.300')}
-            >
-              21 SEP 2015
-            </chakra.span>
-          </Flex>
+          <Image
+            rounded={'lg'}
+            height={230}
+            width={282}
+            objectFit={'cover'}
+            src={initialImage}
+          />
         </Box>
+        <Stack pt={10} align={'center'}>
+          <Text
+            color={props.sex === 'MALE' ? 'blue.300' : 'pink.300'}
+            fontSize={'sm'}
+            textTransform={'uppercase'}
+          >
+            {props.sex}
+          </Text>
+          <Heading fontSize={'2xl'} fontFamily={'body'} fontWeight={500}>
+            {name}
+          </Heading>
+          <Text color={'gray.600'}>{price}</Text>
+        </Stack>
       </Box>
-    </Box>
+    </Center>
   );
 };

@@ -1,17 +1,17 @@
-import { Container, Wrap, WrapItem } from '@chakra-ui/react';
+import { Wrap, WrapItem } from '@chakra-ui/react';
 import type { FieldSet } from 'airtable';
 import { nanoid } from 'nanoid';
 import { Fragment } from 'react';
 import type { LoaderFunction } from 'remix';
 import { useLoaderData } from 'remix';
 
-import ReactJson from '~/components/ReactJson';
 import type { Dog } from '~/types';
 import { db } from '~/utils/db.server';
 import { camelize } from '~/utils/helpers';
 
 import { Heros } from '../components/Heros';
 import { DogCard } from './DogCard';
+
 export const loader: LoaderFunction = async () => {
   const data = db<FieldSet>('dogs')
     .select({
@@ -41,24 +41,27 @@ export const loader: LoaderFunction = async () => {
 export default function IndexRoute() {
   const dogs = useLoaderData<Dog[]>();
   console.log('dogs: ', dogs);
-
+  // throw new Error('This is an error');
   return (
     <Fragment>
       <Heros />
-      <ReactJson dog={dogs} />
+      {/* <ReactJson dog={dogs} /> */}
       <Wrap spacing="30px" justify="center">
         {dogs.map((dog) => {
           return (
             <WrapItem key={nanoid()}>
               <DogCard
-                key={dog.id}
+                key={nanoid()}
+                id={dog.recordId}
                 name={dog.name}
-                images={dog.avatar}
+                images={dog.images}
                 breed={dog.breedName}
                 colors={dog.colors}
                 birthday={dog.birthday}
                 notes={dog.notes}
                 inquireForm={dog.inquireForm}
+                sex={dog.sex}
+                price={dog.price}
               />
             </WrapItem>
           );
