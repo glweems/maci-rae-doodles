@@ -1,8 +1,7 @@
-import { CloseIcon } from '@chakra-ui/icons';
-import { Box, ChakraProvider, ColorModeScript, Flex } from '@chakra-ui/react';
-import { m } from 'framer-motion';
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import React from 'react';
-import type { LinksFunction, LoaderFunction, MetaFunction } from 'remix';
+import type { LoaderFunction, MetaFunction } from 'remix';
+import { LinksFunction, ScrollRestoration } from 'remix';
 import {
   Links,
   LiveReload,
@@ -14,13 +13,11 @@ import {
 } from 'remix';
 
 import { ErrorMsg } from './components/ErrorMsg';
-import { Navbar } from './components/Navbar';
-import styles from './tailwind.css';
+import { Layout } from './components/Layout';
 import { theme } from './utils/theme';
 
-export const links: LinksFunction = () => {
-  return [{ rel: 'stylesheet', href: styles }];
-};
+// Optional - Check your favicon with the favicon checker
+
 export const meta: MetaFunction = () => {
   const description = `Maci Rae Doodles dog breeding and training`;
   return {
@@ -72,58 +69,47 @@ function Document({
         <Meta />
         {title ? <title>{title}</title> : null}
         <Links />
+        <Scripts />
       </head>
       <body>
-        <ContextProvider>
-          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-          {children}
-          <Scripts />
-          {process.env.NODE_ENV === 'development' && <LiveReload />}
-        </ContextProvider>
+        {children}
+        <ScrollRestoration />
+        <Scripts />
+        {process.env.NODE_ENV === 'development' && <LiveReload />}
       </body>
     </html>
   );
 }
 
-export const ContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => <ChakraProvider theme={theme}>{children}</ChakraProvider>;
-
 export default function App() {
   return (
     <Document>
-      <Navbar />
-      <Box as="main">
-        <Outlet />
-      </Box>
+      <ChakraProvider theme={theme}>
+        <ChakraProvider theme={theme}>
+          <Outlet />
+        </ChakraProvider>
+      </ChakraProvider>
     </Document>
   );
 }
 
 export function CatchBoundary() {
   const caught = useCatch();
-  console.log('caught: ', caught);
-  const { status, statusText, data } = caught;
   return (
-    <ContextProvider>
-      <Document title={`${caught.status} ${caught.statusText}`}>
-        <Box as="main">
-          <ErrorMsg caught={caught} />
-        </Box>
-      </Document>
-    </ContextProvider>
+    <Document title={`${caught.status} ${caught.statusText}`}>
+      <ChakraProvider theme={theme}>
+        <ErrorMsg caught={caught} />
+      </ChakraProvider>
+    </Document>
   );
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <Document title="Uh-oh!">
-      <Box as="main" w="100%" maxW="100vw" overflow="hidden">
-        <Navbar />
+      <ChakraProvider theme={theme}>
         <ErrorMsg error={error} />
-      </Box>
+      </ChakraProvider>
     </Document>
   );
 }

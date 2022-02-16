@@ -2,9 +2,7 @@ import {
   Box,
   Button,
   Container,
-  Flex,
   Heading,
-  Image,
   List,
   ListItem,
   SimpleGrid,
@@ -14,115 +12,54 @@ import {
   useColorModeValue,
   VStack,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import fs from 'fs';
+import Iframe from 'react-iframe';
 import type { LoaderFunction } from 'remix';
 import { useLoaderData } from 'remix';
 
-import ReactJson from '~/components/ReactJson';
-import type { RawDog } from '~/types';
-import { db } from '~/utils/db.server';
-import { camelize } from '~/utils/helpers';
-
-const arrFixFields = [
-  'breed',
-  'birthday',
-  'dad',
-  'mom',
-  'family',
-  'breedName',
-  'momBreedName',
-  'dadBreedName',
-];
-const fixes = {
-  breed: (arr: string[]) => arr?.[0],
-  birthday: (arr: string[]) => arr?.[0],
-  dad: (arr: string[]) => arr?.[0],
-  mom: (arr: string[]) => arr?.[0],
-  family: (arr: string[]) => arr?.[0],
-  breedName: (arr: string[]) => arr?.[0],
-  momBreedName: (arr: string[]) => arr?.[0],
-  dadBreedName: (arr: string[]) => arr?.[0],
-  birthday: (arr: string[]) => new Date(arr?.[0]).toDateString(),
-};
-
-const formatDogFields = (_rawDog: RawDog) => {
-  //   const obj = camelize(_rawDog?.fields);
-
-  const dog = {};
-  Object.entries(camelize(_rawDog?.fields)).forEach(([key, value]) => {
-    if (arrFixFields.includes(key)) {
-      dog[key] = fixes[key](value);
-    } else {
-      dog[key] = value;
-    }
-  });
-  console.log('dog: ', dog);
-  return dog;
-};
-
+import { Carousel } from '~/components/Carousel';
+import { scrapeEmbark } from '~/entry.server';
+import type { Sex } from '~/types/db/dog';
+import { db, formatDogFields } from '~/utils/db.server';
+const embarkImgPath = (id: string) => `/public/embark/${id}.webp`;
 export const loader: LoaderFunction = async ({ request, params }) => {
   const { dogId } = params;
-  const dog = await db('dogs').find(dogId);
-  console.log('dog: ', dog);
-  console.log('request, params: ', request, params);
-  return formatDogFields(dog);
-};
+  const { fields } = await db('dogs').find(dogId);
+  const dog = formatDogFields(fields as any);
 
-type Sex = 'FEMALE' | 'MALE';
+  const imgPath = `/${dog?.dadEmbarkId}.png`;
+
+  try {
+    const embarkImages = [dog?.momEmbarkId, dog?.dadEmbarkId].map(
+      (id) => `public/embark/${id}.webp`,
+    );
+
+    const obj = {
+      [dog?.momEmbarkId]: embarkImgPath(dog?.momEmbarkId),
+      [dog?.dadEmbarkId]: embarkImgPath(dog?.dadEmbarkId),
+    };
+
+    Object.entries(obj).forEach(async (id, imgPath) => {
+      if (!fs.existsSync(imgPath)) await scrapeEmbark(id);
+    });
+  } catch (err) {
+    console.error(err);
+  }
+
+  return { dogId, ...dog };
+};
 
 const bgGradientSex = (sex: Sex) => {
   const color = sex === 'MALE' ? 'blue' : 'pink';
 
   const colors = [700, 600, 400, 800].map((num) => [color, num].join('.'));
 
-  const arr = [`${color}.300`, `${color}.400`, `${color}.800`];
   return `linear(to-r, ${colors.join(', ')})`;
 };
 
 export default function DogInfoPage() {
   const data = useLoaderData();
-  console.log('data: ', data);
-  const slides = [
-    {
-      img: 'https://images.pexels.com/photos/2599537/pexels-photo-2599537.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-    },
-    {
-      img: 'https://images.pexels.com/photos/2714581/pexels-photo-2714581.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-    },
-    {
-      img: 'https://images.pexels.com/photos/2878019/pexels-photo-2878019.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260',
-    },
-    {
-      img: 'https://images.pexels.com/photos/1142950/pexels-photo-1142950.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-    },
-    {
-      img: 'https://images.pexels.com/photos/3124111/pexels-photo-3124111.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-    },
-  ];
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const slidesCount = slides.length;
-
-  const prevSlide = () => {
-    setCurrentSlide((s) => (s === 0 ? slidesCount - 1 : s - 1));
-  };
-  const nextSlide = () => {
-    setCurrentSlide((s) => (s === slidesCount - 1 ? 0 : s + 1));
-  };
-  const carouselStyle = {
-    transition: 'all .5s',
-    ml: `-${currentSlide * 100}%`,
-  };
-
-  const SLIDES_INTERVAL_TIME = 3000;
-  const ANIMATION_DIRECTION = 'right';
-
-  useEffect(() => {
-    const automatedSlide = setInterval(() => {
-      ANIMATION_DIRECTION.toLowerCase() === 'left' ? prevSlide() : nextSlide();
-    }, SLIDES_INTERVAL_TIME);
-    return () => clearInterval(automatedSlide);
-  }, []);
+  const slides = data.images?.map((img) => img.url);
 
   return (
     <Container maxW={'7xl'}>
@@ -131,59 +68,8 @@ export default function DogInfoPage() {
         spacing={{ base: 8, md: 10 }}
         py={{ base: 18, md: 24 }}
       >
-        <Flex>
-          <Flex
-            w="full"
-            bg={useColorModeValue('gray.200', 'gray.600')}
-            p={10}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Flex w="full" overflow="hidden" pos="relative">
-              <Flex h="400px" w="full" {...carouselStyle}>
-                {slides.map((slide, sid) => (
-                  <Box
-                    key={`slide-${sid}`}
-                    boxSize="full"
-                    shadow="md"
-                    flex="none"
-                  >
-                    <Text
-                      color="white"
-                      fontSize="xs"
-                      p="8px 12px"
-                      pos="absolute"
-                      top="0"
-                    ></Text>
-                    <Image
-                      src={slide.img}
-                      boxSize="full"
-                      backgroundSize="cover"
-                    />
-                  </Box>
-                ))}
-              </Flex>
-              {/* <Text {...arrowStyles} left="0" onClick={prevSlide}>
-                &#10094;
-              </Text>
-              <Text {...arrowStyles} right="0" onClick={nextSlide}>
-                &#10095;
-              </Text> */}
-            </Flex>
-          </Flex>
+        <Carousel images={slides} />
 
-          {data?.images?.map((image) => (
-            <Image
-              rounded={'md'}
-              alt={'product image'}
-              src={image.url}
-              fit={'cover'}
-              align={'center'}
-              w={'100%'}
-              h={{ base: '100%', sm: '400px', lg: '500px' }}
-            />
-          ))}
-        </Flex>
         <Stack spacing={{ base: 6, md: 10 }}>
           <Box as={'header'}>
             <Heading

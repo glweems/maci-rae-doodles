@@ -17,7 +17,6 @@ import { useTable } from 'react-table';
 import type { LoaderFunction } from 'remix';
 import { useLoaderData } from 'remix';
 
-import ReactJson from '~/components/ReactJson';
 import { db } from '~/utils/db.server';
 import { camelize } from '~/utils/helpers';
 
@@ -53,7 +52,7 @@ const columns: Column<Pup>[] = [
   {
     Header: 'Name',
     accessor: 'name',
-    Cell: ({ value }) => <Text bold>{value}</Text>,
+    Cell: ({ value }) => <Text>{value}</Text>,
   },
 
   {

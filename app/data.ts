@@ -3,3 +3,8 @@ export const routes = [
   { name: 'dogs', path: '/dogs' },
   { name: 'Terms & Conditions', path: '/terms-and-conditions' },
 ];
+
+export const socialMedia = {
+  facebook: 'maciraedoodles',
+  instagram: 'maciraedoodles',
+};

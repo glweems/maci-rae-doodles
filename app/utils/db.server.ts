@@ -1,14 +1,15 @@
 import Airtable from 'airtable';
 import type { AirtableBase } from 'airtable/lib/airtable_base';
 import dotenv from 'dotenv';
+
+import type { DogResponse, Fields as DogFields } from '../types/db/dog';
+
 dotenv.config();
 Airtable.configure({
   apiKey: process.env.AIRTABLE_API_KEY,
 });
-// import { env } from './env';
 
 let db: AirtableBase;
-
 declare global {
   // eslint-disable-next-line no-var
   var __db: AirtableBase | undefined;
@@ -29,5 +30,47 @@ if (process.env.NODE_ENV === 'production') {
   }
   db = global.__db;
 }
+
+const fixes = {
+  birthday: (arr: string[]) => new Date(arr?.[0]).toDateString(),
+};
+const firstArrFields = [
+  'breed',
+  'dad',
+  'mom',
+  'family',
+  'breedName',
+  'momBreedName',
+  'dadBreedName',
+  'momEmbarkId',
+  'dadEmbarkId',
+];
+
+export type FormattedDog = DogFields & {
+  momEmbarkId: string;
+  dadEmbarkId: string;
+  momBreedName: string;
+  dadBreedName: string;
+  mom: string;
+  dad: string;
+  birthday: string;
+  birthdayLookup: string;
+};
+
+export const formatDogFields = (fields: DogFields) => {
+  const dog = {};
+  Object.entries(fields).forEach(([key, val]) => {
+    if (Object.keys(fixes).includes(key)) {
+      dog[key] = fixes[key](val);
+    } else {
+      dog[key] = val;
+    }
+    if (firstArrFields.includes(key)) {
+      dog[key] = val?.[0];
+    }
+  });
+
+  return dog as FormattedDog;
+};
 
 export { db };

@@ -1,21 +1,40 @@
-import { Wrap, WrapItem } from '@chakra-ui/react';
+import {
+  Center,
+  Heading,
+  SimpleGrid,
+  VStack,
+  Wrap,
+  WrapItem,
+} from '@chakra-ui/react';
+import type { Token } from '@chakra-ui/styled-system/dist/declarations/src/utils';
 import type { FieldSet } from 'airtable';
+import type CSS from 'csstype';
 import { nanoid } from 'nanoid';
+import PillPity from 'pill-pity';
 import { Fragment } from 'react';
 import type { LoaderFunction } from 'remix';
 import { useLoaderData } from 'remix';
 
+import { DogCard } from '~/components/DogCardNew';
+import { Hero } from '~/components/Hero';
+import { Layout } from '~/components/Layout';
 import type { Dog } from '~/types';
 import { db } from '~/utils/db.server';
 import { camelize } from '~/utils/helpers';
 
-import { Heros } from '../components/Heros';
-import { DogCard } from './DogCard';
+type GradientEntry = [Token<CSS.Property.Color, 'colors'>, number];
+
+export const gradientColorProp = (arr: GradientEntry[]) => {
+  const entries = arr.map(([color, num]) => [color, num].join('.')).join(', ');
+  const val = `linear(to-r, ${entries})`;
+
+  return val;
+};
 
 export const loader: LoaderFunction = async () => {
   const data = db<FieldSet>('dogs')
     .select({
-      sort: [{ field: 'Name', direction: 'asc' }],
+      sort: [{ field: 'name', direction: 'asc' }],
       view: 'Available',
     })
     .all()
@@ -40,33 +59,35 @@ export const loader: LoaderFunction = async () => {
 
 export default function IndexRoute() {
   const dogs = useLoaderData<Dog[]>();
-  console.log('dogs: ', dogs);
+
   // throw new Error('This is an error');
   return (
-    <Fragment>
-      <Heros />
+    <Layout>
+      <Center>
+        <Heading as="h1" size="3xl">
+          Maci Rae Doodles
+        </Heading>
+      </Center>
       {/* <ReactJson dog={dogs} /> */}
-      <Wrap spacing="30px" justify="center">
+      <SimpleGrid columns={[0, 1, 2]} spacing={3}>
         {dogs.map((dog) => {
           return (
-            <WrapItem key={nanoid()}>
-              <DogCard
-                key={nanoid()}
-                id={dog.recordId}
-                name={dog.name}
-                images={dog.images}
-                breed={dog.breedName}
-                colors={dog.colors}
-                birthday={dog.birthday}
-                notes={dog.notes}
-                inquireForm={dog.inquireForm}
-                sex={dog.sex}
-                price={dog.price}
-              />
-            </WrapItem>
+            <DogCard
+              key={nanoid()}
+              id={dog.recordId}
+              name={dog.name}
+              images={dog.images}
+              breed={dog.breedName}
+              colors={dog.colors}
+              birthday={dog.birthday}
+              notes={dog.notes}
+              inquireForm={dog.inquireForm}
+              sex={dog.sex}
+              price={dog.price}
+            />
           );
         })}
-      </Wrap>
-    </Fragment>
+      </SimpleGrid>
+    </Layout>
   );
 }
