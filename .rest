@@ -1,0 +1,36 @@
+@api = https://api.airtable.com/v0/appaYwKFsyvOAQqmh
+
+GET {{api}}/dogs
+    ?view=Admin
+
+### Dog List
+
+GET {{api}}/dogs
+    ?view=Available
+
+###
+
+POST {{api}}/Requests
+Content-Type: application/json
+
+{
+    "fields": {
+        "Dog": ["recV6RwFs3YIVKSRk"],
+        "Phone Number": "(469) 346-8234",
+        "Email ": "gwgraphicdesign@gmail.com",
+        "First Name": "Garrett",
+        "Last Name": "Weems",
+        "Date": "2022-02-05"
+    }
+}
+
+
+###
+POST {{api}}/newsletter
+Content-Type: application/json
+
+{
+    "fields": {
+        "email": "gwgraphicdesign@gmail.com"
+    }
+}
