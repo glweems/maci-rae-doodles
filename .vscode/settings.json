@@ -1,3 +1,7 @@
 {
-  "cSpell.words": ["Postgrest", "tailwindcss"]
+  "rest-client.defaultHeaders": {
+    "User-Agent": "vscode-restclient",
+    "Authorization": "Bearer keybPcECMyrTQXV1P"
+  },
+  "svg.preview.background": "black"
 }
