@@ -14,16 +14,14 @@ import {
 } from '@chakra-ui/react';
 import fs from 'fs';
 import Iframe from 'react-iframe';
-import type { LoaderFunction } from 'remix';
-import { useLoaderData } from 'remix';
+import { useLoaderData } from '@remix-run/react';
 
 import { Carousel } from '~/components/Carousel';
 import { Layout } from '~/components/Layout';
-import { scrapeEmbark } from '~/entry.server';
 import type { Sex } from '~/types/db/dog';
 import { db, formatDogFields } from '~/utils/db.server';
 const embarkImgPath = (id: string) => `/public/embark/${id}.webp`;
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }) => {
   const { dogId } = params;
   const { fields } = await db('dogs').find(dogId);
   const dog = formatDogFields(fields as any);
@@ -39,10 +37,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       [dog?.momEmbarkId]: embarkImgPath(dog?.momEmbarkId),
       [dog?.dadEmbarkId]: embarkImgPath(dog?.dadEmbarkId),
     };
-
-    Object.entries(obj).forEach(async (id, imgPath) => {
-      if (!fs.existsSync(imgPath)) await scrapeEmbark(id);
-    });
   } catch (err) {
     console.error(err);
   }

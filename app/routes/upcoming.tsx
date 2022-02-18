@@ -1,12 +1,9 @@
-import { StarIcon } from '@chakra-ui/icons';
 import {
   Box,
   chakra,
   Container,
   Flex,
   Heading,
-  HStack,
-  Image,
   useColorModeValue,
   Wrap,
   WrapItem,
@@ -14,17 +11,9 @@ import {
 import { nanoid } from 'nanoid';
 import type { LoaderFunction } from 'remix';
 import { useLoaderData } from 'remix';
-
 import { Layout } from '~/components/Layout';
-import ReactJson from '~/components/ReactJson';
-import type { Upcoming, UpcomingLittersData } from '~/Upcoming';
+import type { UpcomingLittersData } from '~/Upcoming';
 import { getUpComingLitters } from '~/utils/api';
-import {
-  db,
-  formatAirtable,
-  formatUpcomingParents,
-  retreiveRecord,
-} from '~/utils/db.server';
 
 export const loader: LoaderFunction = async () => {
   return getUpComingLitters();

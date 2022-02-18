@@ -1,6 +1,10 @@
 import { ChakraProvider, CSSReset } from '@chakra-ui/react';
 import React from 'react';
-import type { LinksFunction, LoaderFunction, MetaFunction } from 'remix';
+import type {
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/react';
 import {
   Links,
   LiveReload,
