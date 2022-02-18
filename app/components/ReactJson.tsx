@@ -22,10 +22,8 @@ const ReactJson: FC<ReactJsonProps> = ({
     setIsOpen(!isOpen);
   }
   if (process.env.NODE_ENV !== 'development') return null;
-  return Object.entries(props).map(([key, value], index) => (
+  return (
     <Box
-      pos="fixed"
-      bottom={10 * index}
       maxW="sm"
       maxH="50vh"
       borderWidth="1px"
@@ -37,27 +35,31 @@ const ReactJson: FC<ReactJsonProps> = ({
       fontFamily="monospace"
       bg="gray.900"
     >
-      <Box key={nanoid()}>
-        <Box position="sticky" top="0" onClick={handleClick}>
-          {key}{' '}
-          {_.isArray(value) && (
-            <Box as="span" color="blue.300">{`(${value.length})`}</Box>
-          )}
-        </Box>
-        {isOpen && (
-          <SyntaxHighlighter
-            language="json"
-            theme={monokai}
-            customStyle={{
-              backgroundColor: 'transparent',
-            }}
-          >
-            {JSON.stringify({ [key]: value }, null, 2)}
-          </SyntaxHighlighter>
-        )}
-      </Box>
+      {Object.entries(props).map(([key, value], index) => {
+        return (
+          <Box key={nanoid()}>
+            <Box position="sticky" top="0" onClick={handleClick}>
+              {key}{' '}
+              {_.isArray(value) && (
+                <Box as="span" color="blue.300">{`(${value.length})`}</Box>
+              )}
+            </Box>
+            {isOpen && (
+              <SyntaxHighlighter
+                language="json"
+                theme={monokai}
+                customStyle={{
+                  backgroundColor: 'transparent',
+                }}
+              >
+                {JSON.stringify({ [key]: value }, null, 2)}
+              </SyntaxHighlighter>
+            )}
+          </Box>
+        );
+      })}
     </Box>
-  ));
+  );
 };
 
 export default ReactJson;

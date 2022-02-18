@@ -17,7 +17,7 @@ export const Layout: FC<BoxProps> = ({ children, ...props }) => {
   return (
     <ContextProvider>
       <Navbar />
-      <Box as="main" p={3} overflowX="hidden" h="100vh" {...props}>
+      <Box as="main" p={3} overflowX="hidden" h="100%" {...props}>
         {children}
       </Box>
       <Footer />

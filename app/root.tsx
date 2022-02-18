@@ -1,7 +1,6 @@
-import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
+import { ChakraProvider, CSSReset } from '@chakra-ui/react';
 import React from 'react';
-import type { LoaderFunction, MetaFunction } from 'remix';
-import { LinksFunction, ScrollRestoration } from 'remix';
+import type { LinksFunction, LoaderFunction, MetaFunction } from 'remix';
 import {
   Links,
   LiveReload,
@@ -9,29 +8,47 @@ import {
   Outlet,
   redirect,
   Scripts,
+  ScrollRestoration,
   useCatch,
 } from 'remix';
 
+import packageJson from '../package.json';
 import { ErrorMsg } from './components/ErrorMsg';
-import { Layout } from './components/Layout';
 import { theme } from './utils/theme';
-
-// Optional - Check your favicon with the favicon checker
-
 export const meta: MetaFunction = () => {
-  const description = `Maci Rae Doodles dog breeding and training`;
+  const { description } = packageJson;
   return {
     viewport: 'width=device-width,initial-scale=1',
     description,
     keywords: 'Remix,jokes',
     'twitter:image': 'https://remix-jokes.lol/social.png',
     'twitter:card': 'summary_large_image',
-    'twitter:creator': '@remix_run',
-    'twitter:site': '@remix_run',
-    'twitter:title': 'Remix Jokes',
+    'twitter:title': 'Maci Rae Doodles',
     'twitter:description': description,
   };
 };
+
+export const links: LinksFunction = () => [
+  {
+    rel: 'apple-touch-icon',
+    sizes: '180x180',
+    href: '/apple-touch-icon.png',
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '32x32',
+    href: '/favicon-32x32.png',
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '16x16',
+    href: '/favicon-16x16.png',
+  },
+  { rel: 'manifest', href: '/manifest.json' },
+  { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#bf1d73' },
+];
 
 export const loader: LoaderFunction = ({ request }) => {
   // upgrade people to https automatically
@@ -69,14 +86,24 @@ function Document({
         <Meta />
         {title ? <title>{title}</title> : null}
         <Links />
-        <Scripts />
+
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=UA-219579207-1"
+        />
+
+        <meta name="msapplication-TileColor" content="#ffffff" />
+        <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
+        <meta name="theme-color" content="#ffffff"></meta>
+        <CSSReset />
       </head>
+
       <body>
         {children}
         <ScrollRestoration />
-        <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
       </body>
+      <Scripts />
     </html>
   );
 }
@@ -85,9 +112,7 @@ export default function App() {
   return (
     <Document>
       <ChakraProvider theme={theme}>
-        <ChakraProvider theme={theme}>
-          <Outlet />
-        </ChakraProvider>
+        <Outlet />
       </ChakraProvider>
     </Document>
   );

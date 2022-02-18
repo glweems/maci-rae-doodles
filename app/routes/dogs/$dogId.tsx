@@ -18,6 +18,7 @@ import type { LoaderFunction } from 'remix';
 import { useLoaderData } from 'remix';
 
 import { Carousel } from '~/components/Carousel';
+import { Layout } from '~/components/Layout';
 import { scrapeEmbark } from '~/entry.server';
 import type { Sex } from '~/types/db/dog';
 import { db, formatDogFields } from '~/utils/db.server';
@@ -62,7 +63,7 @@ export default function DogInfoPage() {
   const slides = data.images?.map((img) => img.url);
 
   return (
-    <Container maxW={'7xl'}>
+    <Layout>
       <SimpleGrid
         columns={{ base: 1, lg: 2 }}
         spacing={{ base: 8, md: 10 }}
@@ -222,6 +223,6 @@ export default function DogInfoPage() {
           </Stack>
         </Stack>
       </SimpleGrid>
-    </Container>
+    </Layout>
   );
 }

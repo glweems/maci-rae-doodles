@@ -35,7 +35,7 @@ export const loader: LoaderFunction = async () => {
   const data = db<FieldSet>('dogs')
     .select({
       sort: [{ field: 'name', direction: 'asc' }],
-      view: 'Available',
+      view: 'available',
     })
     .all()
     .then((_dogs) => {

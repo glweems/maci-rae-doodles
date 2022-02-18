@@ -19,6 +19,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import PillPity from 'pill-pity';
+import type { EventHandler, SyntheticEvent } from 'react';
 import { AiOutlineMessage } from 'react-icons/ai';
 import { useNavigate } from 'remix';
 
@@ -40,11 +41,14 @@ export const DogCard = (props) => {
     'https://source.boringavatars.com';
   const navigate = useNavigate();
   const { name, id, images, breed, sex, price } = props;
-  console.log('price: ', price);
+
   const formattedPrice = price || numDisplay(price);
   const isMale = sex === 'MALE';
   const sexColor = isMale ? 'blue' : 'pink';
-  console.log('sex: ', sex);
+  const handleClick: EventHandler<SyntheticEvent<HTMLImageElement>> = (e) => {
+    console.log(e.currentTarget.id);
+    navigate(e.currentTarget.id);
+  };
   return (
     <Flex p={50} w="full" alignItems="center" justifyContent="center">
       <Box
@@ -55,7 +59,13 @@ export const DogCard = (props) => {
         shadow="lg"
         position="relative"
       >
-        <Image src={avi} alt={`Picture of ${name}`} roundedTop="lg" />
+        <Image
+          src={avi}
+          alt={`Picture of ${name}`}
+          roundedTop="lg"
+          id={`/dogs/${id}`}
+          onClick={handleClick}
+        />
 
         <Box p="6">
           <Stat>
