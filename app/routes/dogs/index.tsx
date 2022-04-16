@@ -17,14 +17,14 @@ import { useMemo } from 'react';
 import ReactJsonSyntaxHighlighter from 'react-json-syntax-highlighter';
 import type { Column } from 'react-table';
 import { useTable } from 'react-table';
-import type { LoaderFunction } from 'remix';
-import { useLoaderData } from 'remix';
+import type { LoaderFunction } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
 
 import ReactJson from '~/components/ReactJson';
 import { db } from '~/utils/db.server';
 import { camelize } from '~/utils/helpers';
 
-import type { LoaderData } from '..';
+import type { LoaderData } from '../index.old';
 
 export const loader: LoaderFunction = () => {
   const dogs: LoaderData[] = db('dogs')

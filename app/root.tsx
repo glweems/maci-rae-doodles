@@ -1,7 +1,33 @@
-import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
-import type { LinksFunction, LoaderFunction, MetaFunction } from 'remix';
-import { Links, LiveReload, Meta, Outlet, redirect, Scripts } from 'remix';
+import {
+  Alert,
+  Box,
+  Center,
+  Code,
+  Container,
+  MantineProvider,
+  Title,
+  TypographyStylesProvider,
+} from '@mantine/core';
+import type {
+  ErrorBoundaryComponent,
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node';
+import { redirect } from '@remix-run/node';
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useCatch,
+} from '@remix-run/react';
+import type { FC, PropsWithChildren } from 'react';
+import { Fragment } from 'react';
 
+import { Layout } from './components/layout';
 import { Navbar } from './components/Navbar';
 import { theme } from './utils/theme';
 
@@ -18,10 +44,6 @@ export const meta: MetaFunction = () => {
     'twitter:title': 'Remix Jokes',
     'twitter:description': description,
   };
-};
-
-export const links: LinksFunction = () => {
-  return [];
 };
 
 export const loader: LoaderFunction = ({ request }) => {
@@ -46,95 +68,90 @@ export const loader: LoaderFunction = ({ request }) => {
   }
   return {};
 };
+type DocumentProps = PropsWithChildren<{ title?: string }>;
 
-function Document({
-  children,
-  title = 'Maci Rae Doodles',
-}: {
-  children: React.ReactNode;
-  title?: string;
-}) {
+const Document: FC<DocumentProps> = (props) => {
+  const { children, title } = props;
   return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <Meta />
-        {title ? <title>{title}</title> : null}
-        <Links />
-      </head>
-      <body>
-        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-        {children}
-        <Scripts />
-        {process.env.NODE_ENV === 'development' && <LiveReload />}
-      </body>
-    </html>
+    <MantineProvider
+      theme={theme}
+      withNormalizeCSS
+      withGlobalStyles
+      emotionOptions={{ key: 'gcoin' }}
+      withCSSVariables
+    >
+      <html lang="en">
+        <head>
+          {title && <title>{title}</title>}
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
+          <Meta />
+          <Links />
+        </head>
+
+        <body>
+          <TypographyStylesProvider>{children}</TypographyStylesProvider>
+          <Scripts />
+          <ScrollRestoration />
+          <LiveReload />
+        </body>
+      </html>
+    </MantineProvider>
   );
-}
+};
 
-const ContextProvider = ({ children }: { children: React.ReactNode }) => (
-  <ChakraProvider theme={theme}>{children}</ChakraProvider>
-);
+export function CatchBoundary() {
+  const caught = useCatch();
 
-export default function App() {
   return (
-    <Document>
-      <ContextProvider>
-        <Navbar />
-        <Outlet />
-      </ContextProvider>
+    <Document title="Caught">
+      <Layout>
+        <Container
+          style={{ display: 'flex', justifyItems: 'center', height: '100vh' }}
+        >
+          {/* <Center> */}
+          <Alert
+            // icon={<AlertCircle size={16} />}
+            title="Bummer!"
+            color="red"
+            style={{ width: '100%', marginTop: 'auto', marginBottom: 'auto' }}
+          >
+            <Title order={1}>Caught</Title>
+            <Title order={2} color="red">
+              Status: {caught.status}
+            </Title>
+            <Code>{JSON.stringify(caught.data, null, 2)}</Code>
+          </Alert>
+          {/* </Center> */}
+        </Container>
+      </Layout>
     </Document>
   );
 }
 
-// export function CatchBoundary() {
-//   const caught = useCatch();
-//   console.log('caught: ', caught);
+export const ErrorBoundary: ErrorBoundaryComponent = ({ error, ...props }) => {
+  return (
+    <Document title="Uh-oh!">
+      <Layout>
+        <Container className="error-container" size="lg">
+          <Title>{error.name}</Title>
+          <Code color="red">{error.message}</Code>
 
-//   return (
-//     <Document title={`${caught.status} ${caught.statusText}`}>
-//       <ContextProvider>
-//         <ErrorMsg {...caught} />
-//       </ContextProvider>
-//     </Document>
-//   );
-// }
+          <Code color="red">{error.stack}</Code>
+        </Container>
+      </Layout>
+    </Document>
+  );
+};
 
-// export function ErrorBoundary({ error }: { error: Error }) {
-//   console.log('error: ', error);
-//   console.error(error);
+export default function App() {
+  return (
+    <Document>
+      <Layout>
+        <Outlet />
+      </Layout>
+    </Document>
+  );
+}
 
-//   return (
-//     <Document title="Uh-oh!">
-//       <ContextProvider>
-//         <ErrorMsg statusText={error} />
-//       </ContextProvider>
-//     </Document>
-//   );
-// }
-
-// export function ErrorMsg({ data, status, statusText }) {
-//   return (
-//     <Box textAlign="center" py={10} px={6}>
-//       <Box display="inline-block">
-//         <Flex
-//           flexDirection="column"
-//           justifyContent="center"
-//           alignItems="center"
-//           bg={'red.500'}
-//           rounded={'50px'}
-//           w={'55px'}
-//           h={'55px'}
-//           textAlign="center"
-//         >
-//           <CloseIcon boxSize={'20px'} color={'white'} />
-//         </Flex>
-//       </Box>
-//       <Heading as="h2" size="xl" mt={6} mb={2}>
-//         {_.toString(status)}
-//       </Heading>
-//       <Text color={'gray.500'}>{_.toString(statusText))}</Text>
-//       {data && <ReactJson {...data} />}
-//     </Box>
-//   );
-// }
+export type LayoutProps = PropsWithChildren<DocumentProps>;

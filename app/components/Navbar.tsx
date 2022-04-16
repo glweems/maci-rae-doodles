@@ -11,8 +11,8 @@ import {
   VisuallyHidden,
   VStack,
 } from '@chakra-ui/react';
+import { useNavigate } from '@remix-run/react';
 import { Fragment } from 'react';
-import { useNavigate } from 'remix';
 
 import { AppLink } from './AppLink';
 

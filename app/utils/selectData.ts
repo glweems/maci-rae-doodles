@@ -1,4 +1,4 @@
-import type { Pup } from '~/types';
+import type { Dog } from '~/types';
 
 import { supabase } from './supabase.server';
 
@@ -10,7 +10,7 @@ export const getBreeds = async () =>
 
 export const getDads = async () =>
   await supabase
-    .from<Pup>('pups')
+    .from<Dog>('pups')
     .select('id, name, parent, gender')
     .eq('parent', true)
     .eq('gender', 'MALE')
@@ -18,7 +18,7 @@ export const getDads = async () =>
 
 export const getMoms = async () =>
   await supabase
-    .from<Pup>('pups')
+    .from<Dog>('Dogs')
     .select('id, name, parent, gender')
     .eq('parent', true)
     .eq('gender', 'FEMALE')
@@ -26,10 +26,10 @@ export const getMoms = async () =>
 
 export const getReqFormData = async () => {
   const breeds = await getBreeds();
-  const moms: Pup[] = [];
-  const dads: Pup[] = [];
+  const moms: Dog[] = [];
+  const dads: Dog[] = [];
   const parents = await supabase
-    .from<Pup>('pups')
+    .from<Dog>('Dogs')
     .select('id, name, parent, gender')
     .eq('parent', true)
     .then(({ data }) => data);

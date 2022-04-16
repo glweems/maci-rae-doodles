@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { createCookieSessionStorage } from 'remix';
+import { createCookieSessionStorage } from "@remix-run/node";
 
 import { env } from './env';
 
